@@ -8,68 +8,99 @@ Item {
         anchors.fill: parent
         color: "lightblue"
 
-        ListView {
-            id: listView
+        ColumnLayout {
             anchors.fill: parent
-            model: installedAppsDiff // Модель установленных приложений, переданная из Python
+            spacing: 10
+            anchors.margins: 10
 
-            delegate: Item {
-                width: ListView.view.width
-                height: 50
+            RowLayout {
 
-                RowLayout {
-                    width: parent.width
-                    height: parent.height
+                Layout.fillWidth: true
+                spacing: 10
 
-                    CheckBox {
-                        id: checkBox
-                        Layout.alignment: Qt.AlignLeft
-                        checked: selectedAppsToAdd.indexOf(modelData.name) !== -1
-                        onCheckedChanged: {
-                            if (checkBox.checked) {
-                                if (selectedAppsToAdd.indexOf(modelData.name) === -1) {
-                                    selectedAppsToAdd.push(modelData.name)
-                                    console.log("Added to Add:", modelData.name)
-                                }
-                            } else {
-                                var index = selectedAppsToAdd.indexOf(modelData.name)
-                                if (index > -1) {
-                                    selectedAppsToAdd.splice(index, 1)
-                                    console.log("Removed from Add:", modelData.name)
-                                }
-                            }
-                        }
+                TextField {
+                    width: 600
+                    placeholderText: "Введите поисковое значение"
+                    onTextChanged: {
+                        // Фильтрация списка приложений по введенному тексту
+                        listView.model = installedAppsDiff.filter(function(app) {
+                            return app.name.toLowerCase().includes(text.toLowerCase());
+                        });
                     }
+                }
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        color: "white"
-                        border.color: "black"
-                        radius: 5
+                Button {
+                    text: "Обновить"
+                    onClicked: {
+                        // Логика обновления списка приложений
+                        appManager.updateInstalledAppsDiff()
+                    }
+                }
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData.name
-                            font.pixelSize: 18
+                Button {
+                    text: "Сохранить"
+                    onClicked: {
+                        if (selectedAppsToAdd.length === 0) {
+                            messageDialog.open()
+                        } else {
+                            appManager.saveAppsToDatabase(selectedAppsToAdd)
+                            selectedAppsToAdd = [] // Очистка массива после сохранения
                         }
                     }
                 }
             }
-        }
 
-        Button {
-            text: "Сохранить"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
-            onClicked: {
-                if (selectedAppsToAdd.length === 0) {
-                    messageDialog.open()
-                } else {
-                    appManager.saveAppsToDatabase(selectedAppsToAdd)
-                    selectedAppsToAdd = []
+            ListView {
+                id: listView
+                Layout.alignment: Qt.AlignHCenter
+                width: 700
+                Layout.fillHeight: true
+                model: installedAppsDiff // Модель установленных приложений, переданная из Python
 
+                delegate: Item {
+                    width: 600
+                    height: 40
+
+                    RowLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 10
+
+                        CheckBox {
+                            id: checkBox
+                            Layout.alignment: Qt.AlignLeft
+                            checked: selectedAppsToAdd.indexOf(modelData.name) !== -1
+                            onCheckedChanged: {
+                                if (checkBox.checked) {
+                                    if (selectedAppsToAdd.indexOf(modelData.name) === -1) {
+                                        selectedAppsToAdd.push(modelData.name)
+                                        console.log("Added to Add:", modelData.name)
+                                    }
+                                } else {
+                                    var index = selectedAppsToAdd.indexOf(modelData.name)
+                                    if (index > -1) {
+                                        selectedAppsToAdd.splice(index, 1)
+                                        console.log("Removed from Add:", modelData.name)
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            color: "white"
+                            border.color: "black"
+                            radius: 5
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: modelData.name
+                                font.pixelSize: 14
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
                 }
             }
         }
