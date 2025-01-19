@@ -30,6 +30,14 @@ try:
                             );
                         """)
             print("Таблицы созданы успешно!")
+            cursor.execute("""
+                            CREATE TABLE IF NOT EXISTS activity_sessions (
+                                id SERIAL PRIMARY KEY,
+                                app_name VARCHAR(255) NOT NULL,
+                                start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                end_time TIMESTAMP
+                            );
+                        """)
 except Exception as e:
     print("Ошибка при создании таблицы:", e)
 finally:
@@ -161,3 +169,62 @@ def get_global_stats_from_db():
     except Exception as e:
         print(f"Error: {e}")
         return []
+
+def start_activity_session(app_name):
+    try:
+        # Подключение к базе данных
+        conn = psycopg2.connect(
+            dbname="activitydb",
+            user="postgres",
+            password="pass",
+            host="localhost",
+            port="5432"
+        )
+
+        # Создание курсора
+        cursor = conn.cursor()
+
+        # Вставка данных в таблицу
+        cursor.execute("INSERT INTO activity_sessions (app_name) VALUES (%s)", (app_name,))
+
+        # Сохранение изменений
+        conn.commit()
+
+        # Закрытие курсора и соединения
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+def end_activity_session(app_name):
+    try:
+        # Подключение к базе данных
+        conn = psycopg2.connect(
+            dbname="activitydb",
+            user="postgres",
+            password="pass",
+            host="localhost",
+            port="5432"
+        )
+
+        # Создание курсора
+        cursor = conn.cursor()
+
+        # Обновление данных в таблице
+        cursor.execute("UPDATE activity_sessions SET end_time = CURRENT_TIMESTAMP WHERE app_name = %s AND end_time IS NULL", (app_name,))
+        print(f'Postgres обновил {app_name}')
+
+        # Проверка, что запрос обновил хотя бы одну запись
+        if cursor.rowcount == 0:
+            print(f"No matching record found for {app_name}")
+
+        # Сохранение изменений
+        conn.commit()
+
+        # Закрытие курсора и соединения
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        print(f"Error: {e}")
