@@ -38,14 +38,3 @@ def get_installed_apps_all():
             continue
 
     return apps
-
-def main():
-    apps = get_installed_apps_all()
-
-    for app in apps:
-        print(f"Application Name: {app['name']}")
-        print(f"Exe path: {app['exe_path']}")
-
-
-if __name__ == "__main__":
-    main()

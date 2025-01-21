@@ -8,7 +8,7 @@ Item {
 
         ListView {
             anchors.fill: parent
-            model: installedAppsDB // Модель установленных приложений, переданная из Python
+            model: shortDbAppsModel // Модель установленных приложений, переданная из Python
 
             delegate: Item {
                 width: ListView.view.width

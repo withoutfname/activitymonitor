@@ -1,131 +1,152 @@
 import psycopg2
-
-# Подключение к базе данных PostgreSQL
-connection = psycopg2.connect(
-    dbname="activitydb",  # Название вашей базы данных
-    user="postgres",  # Пользователь PostgreSQL
-    password="pass",  # Ваш пароль
-    host="localhost",  # Хост (локально)
-    port="5432"  # Порт по умолчанию
-)
-
-# Создание таблицы
-try:
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS short_installed_apps (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,                                
-                short_exe_path VARCHAR(255)                            
-                );
-            """)
-            print("Таблица создана успешно!")
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS full_installed_apps (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    full_exe_path VARCHAR(255),
-                    short_exe_path VARCHAR(255),
-                    process_name VARCHAR(255)
-                );
-            """)
-            print("Таблица создана успешно!")
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS global_stats (
-                    id SERIAL PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    process_name VARCHAR(255),
-                    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    end_time TIMESTAMP,
-                    is_tracking BOOLEAN DEFAULT TRUE
-                );
-            """)
-            print("Таблица создана успешно!")
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS activity_sessions (
-                    id SERIAL PRIMARY KEY,
-                    app_name VARCHAR(255) NOT NULL,
-                    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    end_time TIMESTAMP
-                );
-            """)
-            print("Таблицы созданы успешно!")
-except Exception as e:
-    print("Ошибка при создании таблицы:", e)
-finally:
-    connection.close()
+import os
+from functools import wraps
 
 
+def get_db_connection():
+    """
+    Возвращает соединение с базой данных.
+    """
+    return psycopg2.connect(
+        dbname="activitydb",  # Название вашей базы данных
+        user="postgres",  # Пользователь PostgreSQL
+        password="pass",  # Ваш пароль
+        host="localhost",  # Хост (локально)
+        port="5432"  # Порт по умолчанию
+    )
 
-def save_apps_to_short_db(apps, paths):
+
+def create_tables():
+    """
+    Создает таблицы в базе данных, если они не существуют.
+    """
     try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",  # Название вашей базы данных
-            user="postgres",  # Пользователь PostgreSQL
-            password="pass",  # Ваш пароль
-            host="localhost",  # Хост (локально)
-            port="5432"  # Порт по умолчанию
-        )
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS installed_apps (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        full_exe_path VARCHAR(255),
+                        short_exe_path VARCHAR(255),
+                        process_name VARCHAR(255)
+                    );
+                """)
+                print("Таблица installed_apps создана успешно!")
 
-        # Создание курсора
-        cursor = conn.cursor()
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS global_stats (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        process_name VARCHAR(255),
+                        full_exe_path VARCHAR(255),
+                        start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        end_time TIMESTAMP,
+                        is_tracking BOOLEAN DEFAULT TRUE
+                    );
+                """)
+                print("Таблица global_stats создана успешно!")
 
-        # Вставка данных в таблицу short_installed_apps
-        for app, path in zip(apps, paths):
-            cursor.execute("""
-                INSERT INTO short_installed_apps (name, short_exe_path) 
-                VALUES (%s, %s)
-                """, (app, path))
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS activity_sessions (
+                        id SERIAL PRIMARY KEY,
+                        app_name VARCHAR(255) NOT NULL,
+                        start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        end_time TIMESTAMP
+                    );
+                """)
+                print("Таблица activity_sessions создана успешно!")
+    except Exception as e:
+        print("Ошибка при создании таблиц:", e)
 
-        # Сохранение изменений
-        conn.commit()
-        print(f"{len(apps)} приложений успешно добавлены в таблицу short_installed_apps!")
 
+def ensure_tables_exist(func):
+    """
+    Декоратор, который гарантирует, что таблицы существуют перед выполнением функции.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        create_tables()  # Создаем таблицы, если их нет
+        return func(*args, **kwargs)  # Выполняем основную функцию
+    return wrapper
+
+
+@ensure_tables_exist
+def short_save_installed_apps_db(apps, paths):
+    """
+    Сохраняет приложения с короткими путями (short_exe_path) в таблицу short_installed_apps.
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                # Вставка данных в таблицу short_installed_apps
+                for app, path in zip(apps, paths):
+                    cursor.execute("""
+                        INSERT INTO short_installed_apps (name, short_exe_path) 
+                        VALUES (%s, %s)
+                    """, (app, path))
+
+                # Сохранение изменений
+                conn.commit()
+                print(f"{len(apps)} приложений успешно добавлены в таблицу short_installed_apps!")
     except Exception as e:
         print(f"Ошибка при добавлении данных в таблицу: {e}")
-    finally:
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
+
+
+@ensure_tables_exist
+def full_save_installed_apps_db(apps, paths, processes):
+    """
+    Сохраняет приложения с полными путями (full_exe_path) и названиями процессов (process_name) в таблицу installed_apps.
+    Если full_exe_path известен, short_exe_path будет автоматически извлечен из него.
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                # Вставка данных в таблицу installed_apps
+                for app, path, process in zip(apps, paths, processes):
+                    # Извлекаем short_exe_path из full_exe_path (если он есть)
+                    short_exe_path = os.path.basename(path) if path else None
+
+                    cursor.execute("""
+                        INSERT INTO installed_apps (name, full_exe_path, short_exe_path, process_name)
+                        VALUES (%s, %s, %s, %s)
+                    """, (app, path, short_exe_path, process))
+
+                # Сохранение изменений
+                conn.commit()
+                print(f"{len(apps)} приложений успешно добавлены в таблицу installed_apps!")
+    except Exception as e:
+        print(f"Ошибка при добавлении данных в таблицу: {e}")
+
+
+@ensure_tables_exist
+def get_names_from_installed_apps_db():
+    """
+    Возвращает список названий приложений из таблицы short_installed_apps.
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                # Выполнение запроса
+                cursor.execute("SELECT name FROM installed_apps")
+
+                # Получение данных
+                rows = cursor.fetchall()
+
+                # Преобразование данных в список словарей
+                apps = [{'name': row[0]} for row in rows]
+                return apps
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
 
 
 
 
 
 '''
-def get_installed_apps_from_db():
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
 
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Выполнение запроса
-        cursor.execute("SELECT name FROM installed_apps")
-
-        # Получение данных
-        rows = cursor.fetchall()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-        # Преобразование данных в список словарей
-        apps = [{'name': row[0]} for row in rows]
-        return apps
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
 
 def save_apps_to_db(apps):
     try:

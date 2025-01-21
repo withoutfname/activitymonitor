@@ -177,3 +177,26 @@ if __name__ == "__main__":
     app_manager.monitor_apps()
 
     sys.exit(app.exec())
+
+
+opened_windows_all = []
+
+    for hwnd, pid, title in get_opened_windows():
+        try:
+            process = psutil.Process(pid)
+            process_name = process.name()
+            exe_path = process.exe()
+            create_time = datetime.fromtimestamp(process.create_time())
+
+            opened_windows_all.append({
+                "Process Name": process_name,
+                "Full Exe Path": exe_path,
+                "Start Time": create_time.strftime('%Y-%m-%d %H:%M:%S'),
+            })
+
+        except psutil.NoSuchProcess:
+            continue
+        except psutil.AccessDenied:
+            print(f"Access Denied for PID {pid}")
+        except Exception as e:
+            print(f"Error: {e}")
