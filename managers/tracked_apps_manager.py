@@ -1,5 +1,6 @@
 # managers/tracked_apps_manager.py
-from PyQt5.QtCore import QObject, pyqtSlot, QTimer
+
+from PyQt5.QtCore import QObject, pyqtSlot, QTimer, QDateTime, Qt
 from backend.database import get_apps_from_tracked_apps_db, start_activity, end_activity
 from models.tracked_apps_model import TrackedAppsModel
 import psutil  # Используем psutil для работы с процессами
@@ -15,6 +16,7 @@ class TrackedAppsManager(QObject):
         self.timer = QTimer()
         self.timer.timeout.connect(self.checkRunningProcesses)
         self.timer.start(5000)  # Проверка каждые 5 секунд
+        self.checkRunningProcesses()
 
     @property
     def trackedAppsModel(self):
@@ -38,9 +40,6 @@ class TrackedAppsManager(QObject):
         trackedApps = self._trackedAppsModel.getTrackedApps()  # Получаем список отслеживаемых приложений
         runningProcesses = self.getRunningProcesses()  # Получаем список запущенных процессов
 
-        print("Отслеживаемые приложения:", trackedApps)  # Отладочный вывод
-        print("Запущенные процессы:", runningProcesses)  # Отладочный вывод
-
         # Проверяем, какие из отслеживаемых приложений запущены
         for app in trackedApps:
             exePath = app["exePath"]
@@ -51,7 +50,7 @@ class TrackedAppsManager(QObject):
             if self.isProcessRunning(exePath, processName, runningProcesses):
                 if exePath not in self.runningProcesses:
                     # Приложение запущено
-                    self.runningProcesses[exePath] = True
+                    self.runningProcesses[exePath] = QDateTime.currentDateTime()  # Сохраняем время начала
                     start_activity(appName, processName, exePath)  # Запускаем активность
                     print(f"Приложение {appName} запущено.")
             else:
@@ -81,7 +80,7 @@ class TrackedAppsManager(QObject):
         except Exception as e:
             print(f"Ошибка при получении списка процессов: {e}")
 
-        print("Запущенные процессы:", processes)  # Отладочный вывод
+        #print("Запущенные процессы:", processes)  # Отладочный вывод
         return processes
 
     def isProcessRunning(self, exePath, processName, runningProcesses):
@@ -96,3 +95,33 @@ class TrackedAppsManager(QObject):
             if processName and proc["name"] and processName.lower() == proc["name"].lower():
                 return True
         return False
+
+    @pyqtSlot(result=int)
+    def getRunningTrackedAppsCount(self):
+        """
+        Возвращает количество запущенных отслеживаемых приложений.
+        """
+        return len(self.runningProcesses)
+
+    @pyqtSlot(result="QVariantList")
+    def getIncompleteActivities(self):
+        """
+        Возвращает список незавершенных активностей с текущей длительностью.
+        """
+        incomplete_activities = []
+        current_time = QDateTime.currentDateTime()
+
+        for exePath, startTime in self.runningProcesses.items():
+            # Находим приложение в списке отслеживаемых
+            trackedApps = self._trackedAppsModel.getTrackedApps()
+            for app in trackedApps:
+                if app["exePath"] == exePath:
+                    incomplete_activities.append({
+                        "name": app["name"],
+                        "exePath": exePath,
+                        "start_time": startTime.toString(Qt.ISODate),  # Преобразуем время в строку
+                        "current_duration": startTime.secsTo(current_time)  # Текущая длительность в секундах
+                    })
+                    break
+
+        return incomplete_activities

@@ -5,7 +5,7 @@ from backend.database import (
     remove_tracked_apps_db,
     start_activity,
     end_activity,
-    cleanup_incomplete_activities,
+    cleanup_incomplete_activities, get_app_stats,
 )
 
 
@@ -51,3 +51,10 @@ class DatabaseManager(QObject):
         Обновляет активность для приложения, если оно завершило работу.
         """
         cleanup_incomplete_activities(app_name, process_name, exe_path)
+
+    @pyqtSlot(result="QVariantList")
+    def getAppStats(self):
+        """
+        Возвращает статистику по приложениям из таблицы activity_sessions.
+        """
+        return get_app_stats()

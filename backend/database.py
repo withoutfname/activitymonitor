@@ -208,3 +208,67 @@ def cleanup_incomplete_activities():
 
     except Exception as e:
         print(f"Ошибка при очистке незавершенных активностей: {e}")
+
+
+@ensure_tables_exist
+def get_app_stats():
+    """
+    Возвращает статистику по приложениям из таблицы activity_sessions.
+    Вычисляет длительность как разницу между end_time и start_time.
+    """
+    stats = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 
+                        name, 
+                        exe_path, 
+                        SUM(EXTRACT(EPOCH FROM (end_time - start_time))) as total_duration
+                    FROM activity_sessions
+                    WHERE end_time IS NOT NULL  -- Исключаем незавершенные сессии
+                    GROUP BY name, exe_path
+                """)
+                rows = cursor.fetchall()
+
+                # Преобразуем данные в список словарей
+                for row in rows:
+                    stats.append({
+                        "name": row[0],
+                        "exePath": row[1],
+                        "totalDuration": int(row[2])  # Преобразуем в целое число (секунды)
+                    })
+    except Exception as e:
+        print(f"Ошибка при получении статистики: {e}")
+
+    return stats
+
+@ensure_tables_exist
+def get_incomplete_activities():
+    """
+    Возвращает список незавершенных активностей (где end_time IS NULL).
+    Каждый элемент списка — это словарь с ключами:
+    - name (название приложения)
+    - start_time (время начала отслеживания)
+    """
+    incomplete_activities = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT name, start_time
+                    FROM activity_sessions
+                    WHERE end_time IS NULL
+                """)
+                rows = cursor.fetchall()
+
+                # Преобразуем данные в список словарей
+                for row in rows:
+                    incomplete_activities.append({
+                        "name": row[0],
+                        "start_time": row[1].isoformat()  # Преобразуем время в строку
+                    })
+    except Exception as e:
+        print(f"Ошибка при получении незавершенных активностей: {e}")
+
+    return incomplete_activities

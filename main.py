@@ -1,14 +1,18 @@
-# main.py
-from managers import DatabaseManager, OpenedWindowsManager, TrackedAppsManager
-from models.opened_windows_model import OpenedWindowsModel
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 import sys
 
+from managers import DatabaseManager, OpenedWindowsManager, TrackedAppsManager
+from models.opened_windows_model import OpenedWindowsModel
 from models.tracked_apps_model import TrackedAppsModel
+from models.stats_model import StatsModel  # Импортируем модель статистики
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    statsModel = StatsModel()
+
 
     # Модель для открытых окон
     opened_windows_model = OpenedWindowsModel()
@@ -26,7 +30,6 @@ if __name__ == "__main__":
     opened_windows_manager.setTrackedAppsManager(tracked_apps_manager)
     tracked_apps_manager.databaseManager = database_manager  # Связываем с DatabaseManager
 
-    # Обновляем список отслеживаемых приложений
     tracked_apps_manager.updateTrackedApps()
 
     # Инициализация QML
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     context.setContextProperty("trackedAppsManager", tracked_apps_manager)
     context.setContextProperty("trackedAppsModel", tracked_apps_manager.trackedAppsModel)  # Передаем модель
     context.setContextProperty("databaseManager", database_manager)
+    context.setContextProperty("statsModel", statsModel)
 
     # Загружаем QML
     engine.load("UI/base.qml")
