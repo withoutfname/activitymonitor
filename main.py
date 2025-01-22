@@ -24,7 +24,9 @@ if __name__ == "__main__":
 
     # Устанавливаем связь между менеджерами
     opened_windows_manager.setTrackedAppsManager(tracked_apps_manager)
+    tracked_apps_manager.databaseManager = database_manager  # Связываем с DatabaseManager
 
+    # Обновляем список отслеживаемых приложений
     tracked_apps_manager.updateTrackedApps()
 
     # Инициализация QML
