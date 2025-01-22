@@ -34,7 +34,7 @@ def create_tables():
                 print("Таблица tracked_apps создана успешно!")
 
                 cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS global_stats (
+                    CREATE TABLE IF NOT EXISTS activity_sessions (
                         id SERIAL PRIMARY KEY,
                         name VARCHAR(255) NOT NULL,
                         process_name VARCHAR(255),
@@ -44,17 +44,8 @@ def create_tables():
                         is_tracking BOOLEAN DEFAULT TRUE
                     );
                 """)
-                print("Таблица global_stats создана успешно!")
-
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS activity_sessions (
-                        id SERIAL PRIMARY KEY,
-                        app_name VARCHAR(255) NOT NULL,
-                        start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        end_time TIMESTAMP
-                    );
-                """)
                 print("Таблица activity_sessions создана успешно!")
+
     except Exception as e:
         print("Ошибка при создании таблиц:", e)
 
@@ -94,6 +85,32 @@ def save_tracked_apps_db(apps):
                 print(f"{len(apps)} приложений успешно добавлены в таблицу tracked_apps!")
     except Exception as e:
         print(f"Ошибка при добавлении данных в таблицу: {e}")
+
+
+@ensure_tables_exist
+def remove_tracked_apps_db(apps):
+    """
+    Удаляет приложения из таблицы tracked_apps по имени, пути и названию процесса.
+    Принимает массив объектов, где каждый объект содержит:
+    - title (название приложения)
+    - processName (название процесса)
+    - exePath (путь к исполняемому файлу)
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                # Удаление данных из таблицы tracked_apps
+                for app in apps:
+                    cursor.execute("""
+                        DELETE FROM tracked_apps
+                        WHERE name = %s AND exe_path = %s AND process_name = %s;
+                    """, (app["title"], app["exePath"], app["processName"]))
+
+                # Сохранение изменений
+                conn.commit()
+                print(f"{len(apps)} приложений успешно удалены из таблицы tracked_apps!")
+    except Exception as e:
+        print(f"Ошибка при удалении данных из таблицы: {e}")
 
 
 @ensure_tables_exist

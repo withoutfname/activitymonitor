@@ -1,6 +1,6 @@
 # managers/database_manager.py
 from PyQt5.QtCore import QObject, pyqtSlot
-from backend.database import save_tracked_apps_db  # Новый метод
+from backend.database import save_tracked_apps_db, remove_tracked_apps_db  # Новый метод
 
 
 class DatabaseManager(QObject):
@@ -14,4 +14,16 @@ class DatabaseManager(QObject):
         """
         save_tracked_apps_db(apps)
         print("Приложения сохранены в базу данных:", apps)
+
+    @pyqtSlot(list)
+    def removeAppsFromDatabase(self, apps):
+        """
+        Удаляет приложения из базы данных.
+        Принимает список объектов, где каждый объект содержит:
+        - title (название приложения)
+        - exePath (путь к исполняемому файлу)
+        - processName (название процесса)
+        """
+        remove_tracked_apps_db(apps)
+        print("Приложения удалены из базы данных:", apps)
 

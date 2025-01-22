@@ -4,53 +4,79 @@ import QtQuick.Layouts 1.15
 
 ApplicationWindow {
     visible: true
-    width: 800
-    height: 600
+    width: 1280
+    height: 720
     minimumWidth: 1280
     minimumHeight: 720
-    title: "Приложение"
+    title: "Activity Monitor"
+    color: "#F5F5F5"  // Светлый фон для всего окна
 
+    // Основной макет
     RowLayout {
         anchors.fill: parent
+        spacing: 0  // Убираем отступы между элементами
 
-        ListView {
-            id: navigation
+        // Панель навигации
+        Rectangle {
             width: 200
             Layout.fillHeight: true
+            color: "#FFFFFF"  // Белый фон для панели навигации
+            border.color: "#E0E0E0"  // Серая граница
 
-            model: ListModel {
-                ListElement { name: "Главная"; file: "main.qml" }
-                ListElement { name: "Конфигурация"; file: "config.qml" }
-            }
+            ListView {
+                id: navigation
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 5  // Отступ между элементами навигации
+                clip: true  // Обрезаем содержимое, если оно выходит за пределы
 
-            delegate: Item {
-                width: parent.width
-                height: 50  // Увеличим высоту для лучшего отображения
+                model: ListModel {
+                    ListElement { name: "Главная"; file: "main.qml" }
+                    ListElement { name: "Конфигурация"; file: "config.qml" }
+                    ListElement { name: "Статистика"; file: "stats.qml" }
+                }
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: "transparent"  // Чтобы отступ был очевидным
-                    implicitHeight: 40
+                delegate: Item {
+                    width: parent.width
+                    height: 40  // Высота кнопки навигации
 
                     Button {
                         anchors.fill: parent
-                        anchors.margins: 10
-
                         text: model.name
+                        flat: true  // Убираем фон кнопки
+                        font.pixelSize: 14
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: parent.down ? "#0078D7" : "#333333"  // Цвет текста
+                            horizontalAlignment: Text.AlignLeft
+                            leftPadding: 10  // Отступ текста слева
+                        }
+                        background: Rectangle {
+                            color: parent.hovered ? "#F0F0F0" : "transparent"  // Подсветка при наведении
+                            radius: 5  // Скругление углов
+                        }
                         onClicked: {
-                            contentLoader.source = model.file
+                            contentLoader.source = model.file  // Загружаем страницу
                         }
                     }
                 }
             }
         }
 
-        Loader {
-            id: contentLoader
+        // Основная область контента
+        Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            anchors.margins: 10
-            source: "main.qml"
+            color: "#FFFFFF"  // Белый фон для контента
+            border.color: "#E0E0E0"  // Серая граница
+
+            Loader {
+                id: contentLoader
+                anchors.fill: parent
+                anchors.margins: 10
+                source: "main.qml"  // Начальная страница
+            }
         }
     }
 }

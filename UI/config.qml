@@ -3,23 +3,34 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
-
     Rectangle {
         anchors.fill: parent
-        color: "lightgreen"
+        color: "#FFFFFF"  // Белый фон
 
         ColumnLayout {
             anchors.fill: parent
             spacing: 20
+            anchors.margins: 20
 
             // Кнопки навигации
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 10
-                Layout.preferredHeight: 50 // Фиксированная высота для кнопок навигации
 
                 Button {
                     text: "Просмотр"
+                    font.pixelSize: 16
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
                     onClicked: {
                         contentLoader.source = "viewPage.qml"
                     }
@@ -27,6 +38,18 @@ Item {
 
                 Button {
                     text: "Добавить"
+                    font.pixelSize: 16
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
                     onClicked: {
                         contentLoader.source = "addPage.qml"
                     }
@@ -34,6 +57,18 @@ Item {
 
                 Button {
                     text: "Удалить"
+                    font.pixelSize: 16
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
                     onClicked: {
                         contentLoader.source = "deletePage.qml"
                     }
@@ -41,18 +76,19 @@ Item {
             }
 
             // Загрузчик для страниц
-            Item {
+            Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                color: "#F5F5F5"  // Светло-серый фон
+                radius: 10  // Скругление углов
 
                 Loader {
                     id: contentLoader
                     anchors.fill: parent
-                    source: "viewPage.qml"
+                    anchors.margins: 10
+                    source: "viewPage.qml"  // Начальная страница
                 }
             }
         }
-
-
     }
 }

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 import sys
 
+from models.tracked_apps_model import TrackedAppsModel
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -12,6 +13,7 @@ if __name__ == "__main__":
     # Модель для открытых окон
     opened_windows_model = OpenedWindowsModel()
 
+    tracked_apps_model = TrackedAppsModel()
     # Менеджеры
     opened_windows_manager = OpenedWindowsManager()
     tracked_apps_manager = TrackedAppsManager()
@@ -22,6 +24,8 @@ if __name__ == "__main__":
 
     # Устанавливаем связь между менеджерами
     opened_windows_manager.setTrackedAppsManager(tracked_apps_manager)
+
+    tracked_apps_manager.updateTrackedApps()
 
     # Инициализация QML
     engine = QQmlApplicationEngine()
@@ -40,8 +44,5 @@ if __name__ == "__main__":
     # Проверяем, загрузился ли QML
     if not engine.rootObjects():
         sys.exit(-1)
-
-    # Обновляем список отслеживаемых приложений при запуске
-    tracked_apps_manager.updateTrackedApps()
 
     sys.exit(app.exec())

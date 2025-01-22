@@ -6,8 +6,6 @@ Item {
     // Инициализация массивов для временного хранения отмеченных приложений
     property var runningAppsToAdd: [] // Для страницы "Запущенные приложения"
 
-    property var customAppsToAdd: [] // Для страницы "Пользовательские приложения"
-
     Rectangle {
         anchors.fill: parent
         color: "lightblue"
@@ -29,20 +27,6 @@ Item {
                         runningAppsToAdd = []
                         loader.source = "runningAppsPage.qml"
                         loader.item.runningAppsToAdd = runningAppsToAdd // Передаем массив
-                    }
-                    Layout.preferredWidth: parent.width
-                    Layout.alignment: Qt.AlignTop
-                }
-
-
-
-                Button {
-                    text: "Пользовательские приложения"
-                    onClicked: {
-                        // Очищаем массив перед загрузкой страницы
-                        customAppsToAdd = []
-                        loader.source = "customAppsPage.qml"
-
                     }
                     Layout.preferredWidth: parent.width
                     Layout.alignment: Qt.AlignTop

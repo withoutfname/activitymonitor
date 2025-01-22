@@ -33,6 +33,7 @@ class OpenedWindowsModel(QAbstractListModel):
         }
 
     def updateData(self, new_windows):
+        """Обновляет данные модели и применяет фильтр."""
         self.beginResetModel()
         self.windows = new_windows
         self._applyFilter()  # Применяем фильтр после обновления данных
@@ -40,15 +41,21 @@ class OpenedWindowsModel(QAbstractListModel):
 
     @pyqtSlot(str)
     def filter(self, text):
-        """Фильтрация списка окон по тексту."""
-        self._filter_text = text
+        """Фильтрация списка окон по тексту (название, процесс, путь)."""
+        self._filter_text = text.lower()  # Приводим текст к нижнему регистру
         self._applyFilter()
 
     def _applyFilter(self):
         """Применяет текущий фильтр к списку окон."""
         self.beginResetModel()
         if self._filter_text:
-            self.filtered_windows = [window for window in self.windows if self._filter_text.lower() in window["title"].lower()]
+            # Фильтруем по названию, процессу и пути
+            self.filtered_windows = [
+                window for window in self.windows
+                if (self._filter_text in window["title"].lower() or
+                    self._filter_text in window["processName"].lower() or
+                    self._filter_text in window["exePath"].lower())
+            ]
         else:
             self.filtered_windows = self.windows  # Если фильтр пуст, показываем все окна
         self.endResetModel()
