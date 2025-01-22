@@ -6,7 +6,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "lightblue"
+        color: "#121212"  // Темный фон (почти черный)
 
         // Кнопка "Удалить"
         Button {
@@ -17,6 +17,19 @@ Item {
                 margins: 10
             }
             text: "Удалить"
+
+            // Стилизация кнопки
+            contentItem: Text {
+                text: parent.text
+                font: parent.font
+                color: "#FFFFFF"  // Белый цвет текста
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                radius: 5  // Скругление углов
+            }
 
             onClicked: {
                 if (selectedAppsToRemove.length === 0) {
@@ -50,8 +63,8 @@ Item {
                 Rectangle {
                     width: parent.width
                     height: 50
-                    color: "white"
-                    border.color: "lightgray"
+                    color: "#1E1E1E"  // Темный фон ячейки
+                    border.color: "#333333"  // Темно-серая граница
                     radius: 5
 
                     Row {
@@ -81,7 +94,7 @@ Item {
                                     // Удаляем приложение из массива, если чекбокс снят
                                     selectedAppsToRemove = selectedAppsToRemove.filter(app => app.processName !== model.processName);
                                 }
-                                console.log("Selected apps:", selectedAppsToRemove); // Отладочный вывод
+
                             }
                         }
 
@@ -89,6 +102,7 @@ Item {
                         Text {
                             text: model.name + " - " + model.exePath
                             font.pixelSize: 14
+                            color: "#E0E0E0"  // Светло-серый цвет текста
                             elide: Text.ElideRight
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -108,9 +122,16 @@ Item {
         contentItem: Text {
             text: "Выберите хотя бы одно приложение"
             wrapMode: Text.WordWrap
+            font.pixelSize: 14
+            color: "#E0E0E0"  // Светло-серый цвет текста
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+        }
+
+        background: Rectangle {
+            color: "#1E1E1E"  // Темный фон диалога
+            radius: 5  // Скругление углов
         }
 
         onAccepted: {

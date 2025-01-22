@@ -73,4 +73,3 @@ class OpenedWindowsManager(QObject):
             app for app in self._runningAppsToAdd
             if self.openedWindowsModel.isAppRunning(app["processName"])
         ]
-        print("Массив runningAppsToAdd обновлен после фильтрации:", self._runningAppsToAdd)

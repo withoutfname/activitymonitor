@@ -13,7 +13,7 @@ class DatabaseManager(QObject):
         Сохраняет приложения в базу данных.
         """
         save_tracked_apps_db(apps)
-        print("Приложения сохранены в базу данных:", apps)
+
 
     @pyqtSlot(list)
     def removeAppsFromDatabase(self, apps):
@@ -25,5 +25,5 @@ class DatabaseManager(QObject):
         - processName (название процесса)
         """
         remove_tracked_apps_db(apps)
-        print("Приложения удалены из базы данных:", apps)
+
 

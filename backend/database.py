@@ -31,7 +31,7 @@ def create_tables():
                         process_name VARCHAR(255)
                     );
                 """)
-                print("Таблица tracked_apps создана успешно!")
+
 
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS activity_sessions (
@@ -44,7 +44,7 @@ def create_tables():
                         is_tracking BOOLEAN DEFAULT TRUE
                     );
                 """)
-                print("Таблица activity_sessions создана успешно!")
+
 
     except Exception as e:
         print("Ошибка при создании таблиц:", e)
@@ -82,7 +82,7 @@ def save_tracked_apps_db(apps):
 
                 # Сохранение изменений
                 conn.commit()
-                print(f"{len(apps)} приложений успешно добавлены в таблицу tracked_apps!")
+
     except Exception as e:
         print(f"Ошибка при добавлении данных в таблицу: {e}")
 
@@ -108,7 +108,7 @@ def remove_tracked_apps_db(apps):
 
                 # Сохранение изменений
                 conn.commit()
-                print(f"{len(apps)} приложений успешно удалены из таблицы tracked_apps!")
+
     except Exception as e:
         print(f"Ошибка при удалении данных из таблицы: {e}")
 
@@ -144,167 +144,3 @@ def get_apps_from_tracked_apps_db():
     except Exception as e:
         print(f"Ошибка при получении данных из базы данных: {e}")
         return []
-
-
-
-
-
-
-
-'''
-
-
-def save_apps_to_db(apps):
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
-
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Вставка данных в таблицу
-        for app in apps:
-            cursor.execute("INSERT INTO installed_apps (name) VALUES (%s)", (app,))
-
-
-        # Сохранение изменений
-        conn.commit()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def remove_apps_from_db(apps):
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
-
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Удаление данных из таблицы
-        for app in apps:
-            cursor.execute("DELETE FROM installed_apps WHERE name = %s", (app,))
-            cursor.execute("""
-                            UPDATE global_stats
-                            SET end_time = CURRENT_TIMESTAMP, is_tracking = FALSE
-                            WHERE name = %s AND is_tracking = TRUE
-                        """, (app,))
-
-        # Сохранение изменений
-        conn.commit()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-    except Exception as e:
-        print(f"Error: {e}")
-
-def get_global_stats_from_db():
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
-
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Выполнение запроса
-        cursor.execute("SELECT name, start_time, end_time, is_tracking FROM global_stats")
-
-        # Получение данных
-        rows = cursor.fetchall()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-        # Преобразование данных в список словарей
-        stats = [{'name': row[0], 'start_time': row[1], 'end_time': row[2], 'is_tracking': row[3]} for row in rows]
-        return stats
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
-
-def start_activity_session(app_name):
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
-
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Вставка данных в таблицу
-        cursor.execute("INSERT INTO activity_sessions (app_name) VALUES (%s)", (app_name,))
-
-        # Сохранение изменений
-        conn.commit()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-    except Exception as e:
-        print(f"Error: {e}")
-
-def end_activity_session(app_name):
-    try:
-        # Подключение к базе данных
-        conn = psycopg2.connect(
-            dbname="activitydb",
-            user="postgres",
-            password="pass",
-            host="localhost",
-            port="5432"
-        )
-
-        # Создание курсора
-        cursor = conn.cursor()
-
-        # Обновление данных в таблице
-        cursor.execute("UPDATE activity_sessions SET end_time = CURRENT_TIMESTAMP WHERE app_name = %s AND end_time IS NULL", (app_name,))
-        print(f'Postgres обновил {app_name}')
-
-        # Проверка, что запрос обновил хотя бы одну запись
-        if cursor.rowcount == 0:
-            print(f"No matching record found for {app_name}")
-
-        # Сохранение изменений
-        conn.commit()
-
-        # Закрытие курсора и соединения
-        cursor.close()
-        conn.close()
-
-    except Exception as e:
-        print(f"Error: {e}")
-'''

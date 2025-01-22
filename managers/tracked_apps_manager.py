@@ -23,4 +23,3 @@ class TrackedAppsManager(QObject):
         """
         trackedApps = get_apps_from_tracked_apps_db()  # Получаем данные из базы данных
         self._trackedAppsModel.updateData(trackedApps)  # Обновляем модель
-        print("Список отслеживаемых приложений обновлен:", trackedApps)

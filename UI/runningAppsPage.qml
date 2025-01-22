@@ -7,23 +7,31 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "lightgreen"
+        color: "#121212"  // Темный фон (почти черный)
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: 10
-            anchors.margins: 10
+            spacing: 20
+            anchors.margins: 20
 
-            // Поле поиска и кнопка "Обновить"
+            // Поле поиска и кнопки
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
-                Layout.bottomMargin: 50
 
+                // Поле поиска
                 TextField {
                     id: searchField
-                    width: 600
+                    Layout.fillWidth: true
                     placeholderText: "Поиск по названию"
+                    font.pixelSize: 14
+                    color: "#E0E0E0"  // Светло-серый цвет текста
+                    placeholderTextColor: "#808080"  // Серый цвет плейсхолдера
+                    background: Rectangle {
+                        color: "#1E1E1E"  // Темный фон
+                        radius: 5  // Скругление углов
+                        border.color: "#333333"  // Темно-серая граница
+                    }
                     onTextChanged: {
                         if (openedWindowsModel) {
                             openedWindowsModel.filter(text);
@@ -31,16 +39,42 @@ Item {
                     }
                 }
 
+                // Кнопка "Обновить"
                 Button {
                     text: "Обновить"
+                    font.pixelSize: 14
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
                     onClicked: {
                         runningAppsToAdd = [];
                         openedWindowsManager.updateOpenedWindows(); // Используем openedWindowsManager
                     }
                 }
 
+                // Кнопка "Сохранить"
                 Button {
                     text: "Сохранить"
+                    font.pixelSize: 14
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
                     onClicked: {
                         if (runningAppsToAdd.length === 0) {
                             messageDialog.open();
@@ -49,7 +83,6 @@ Item {
                             runningAppsToAdd = []; // Очищаем массив
                             trackedAppsManager.updateTrackedApps(); // Обновляем список отслеживаемых приложений
                             openedWindowsManager.updateOpenedWindows(); // Обновляем список открытых окон
-
                         }
                     }
                 }
@@ -58,19 +91,18 @@ Item {
             // Список открытых окон
             ListView {
                 id: listView
-                width: 700
+                Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.topMargin: 20
-                Layout.bottomMargin: 20
                 model: openedWindowsModel
-                spacing: 5
+                spacing: 10  // Отступ между элементами
+                clip: true  // Обрезаем содержимое, если оно выходит за пределы
 
                 delegate: Rectangle {
                     width: listView.width
                     height: 80
-                    color: "white"
-                    border.color: "lightgray"
-                    radius: 5
+                    color: "#1E1E1E"  // Темный фон
+                    border.color: "#333333"  // Темно-серая граница
+                    radius: 10  // Скругление углов
 
                     RowLayout {
                         anchors.fill: parent
@@ -111,24 +143,24 @@ Item {
                                 text: model.title
                                 font.pixelSize: 16
                                 font.bold: true
+                                color: "#E0E0E0"  // Светло-серый цвет текста
                                 elide: Text.ElideRight
-                                horizontalAlignment: Text.AlignHCenter
                                 Layout.fillWidth: true
                             }
 
                             Text {
                                 text: "Процесс: " + model.processName
                                 font.pixelSize: 14
+                                color: "#B0B0B0"  // Серый цвет текста
                                 elide: Text.ElideRight
-                                horizontalAlignment: Text.AlignHCenter
                                 Layout.fillWidth: true
                             }
 
                             Text {
                                 text: "Путь: " + model.exePath
                                 font.pixelSize: 14
+                                color: "#B0B0B0"  // Серый цвет текста
                                 elide: Text.ElideRight
-                                horizontalAlignment: Text.AlignHCenter
                                 Layout.fillWidth: true
                             }
                         }
@@ -148,9 +180,16 @@ Item {
         contentItem: Text {
             text: "Выберите хотя бы одно приложение"
             wrapMode: Text.WordWrap
+            font.pixelSize: 14
+            color: "#E0E0E0"  // Светло-серый цвет текста
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+        }
+
+        background: Rectangle {
+            color: "#1E1E1E"  // Темный фон диалога
+            radius: 5  // Скругление углов
         }
 
         onAccepted: {

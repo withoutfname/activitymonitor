@@ -8,7 +8,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "lightblue"
+        color: "#121212"  // Темный фон (почти черный)
 
         RowLayout {
             anchors.fill: parent
@@ -30,6 +30,45 @@ Item {
                     }
                     Layout.preferredWidth: parent.width
                     Layout.alignment: Qt.AlignTop
+
+                    // Стилизация кнопки
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
+                }
+
+                // Кнопка "Скоро"
+                Button {
+                    text: "Скоро"
+                    enabled: false // Делаем кнопку некликабельной
+                    Layout.preferredWidth: parent.width
+                    Layout.alignment: Qt.AlignTop
+
+                    // Стилизация кнопки
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#808080"  // Серый цвет текста (для некликабельной кнопки)
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: "#333333"  // Темно-серый цвет фона
+                        radius: 5  // Скругление углов
+                    }
+
+                    // Обработка клика (несмотря на то, что кнопка некликабельна)
+                    onClicked: {
+                        loader.source = "customAppsPage.qml" // Загружаем empty.qml
+                    }
                 }
             }
 
@@ -42,7 +81,6 @@ Item {
                 onLoaded: {
                     if (source === "runningAppsPage.qml") {
                         item.runningAppsToAdd = runningAppsToAdd // Передаем массив при загрузке
-
                     }
                 }
             }

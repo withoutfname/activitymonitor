@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.15
 Item {
     Rectangle {
         anchors.fill: parent
-        color: "#FFFFFF"  // Белый фон
+        color: "#121212"  // Темный фон (почти черный)
 
         // Сообщение, если список пуст
         Label {
@@ -14,7 +14,7 @@ Item {
             anchors.centerIn: parent
             text: "Нет отслеживаемых приложений"
             font.pixelSize: 20
-            color: "#333333"  // Темно-серый цвет текста
+            color: "#E0E0E0"  // Светло-серый цвет текста
             visible: trackedAppsModel ? trackedAppsModel.count === 0 : true // Проверка на null
         }
 
@@ -53,8 +53,8 @@ Item {
                 Rectangle {
                     width: parent.width
                     height: parent.height
-                    color: "#FFFFFF"  // Белый фон
-                    border.color: "#E0E0E0"  // Серая граница
+                    color: "#1E1E1E"  // Темный фон ячейки
+                    border.color: "#333333"  // Темно-серая граница
                     radius: 10  // Скругление углов
 
                     // Основной контент (название приложения и стрелочка)
@@ -72,7 +72,7 @@ Item {
                             text: name // Отображаем имя приложения
                             font.pixelSize: 16
                             font.bold: true
-                            color: "#333333"  // Темно-серый цвет текста
+                            color: "#E0E0E0"  // Светло-серый цвет текста
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
@@ -87,13 +87,13 @@ Item {
                             }
                             background: Rectangle {
                                 color: "transparent"
-                                border.color: "#E0E0E0"  // Серая граница
+                                border.color: "#333333"  // Темно-серая граница
                                 radius: 15
                             }
                             contentItem: Text {
                                 text: parent.text
                                 font.pixelSize: 14
-                                color: "#333333"  // Темно-серый цвет текста
+                                color: "#E0E0E0"  // Светло-серый цвет текста
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
@@ -118,7 +118,7 @@ Item {
                         Text {
                             text: "Путь: " + exePath
                             font.pixelSize: 14
-                            color: "#555555"  // Серый цвет текста
+                            color: "#B0B0B0"  // Серый цвет текста
                             elide: Text.ElideRight
                         }
 
@@ -126,7 +126,7 @@ Item {
                         Text {
                             text: "Процесс: " + processName
                             font.pixelSize: 14
-                            color: "#555555"  // Серый цвет текста
+                            color: "#B0B0B0"  // Серый цвет текста
                             elide: Text.ElideRight
                         }
                     }

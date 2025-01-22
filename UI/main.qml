@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.15
 Item {
     Rectangle {
         anchors.fill: parent
-        color: "#FFFFFF"  // Белый фон
+        color: "#121212"  // Очень темный фон
 
         ColumnLayout {
             anchors.centerIn: parent
@@ -16,7 +16,7 @@ Item {
                 text: "Добро пожаловать!"
                 font.pixelSize: 28
                 font.bold: true
-                color: "#333333"  // Темно-серый цвет текста
+                color: "#E0E0E0"  // Светло-серый цвет текста
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -24,8 +24,9 @@ Item {
             Rectangle {
                 width: 300
                 height: 100
-                color: "#F5F5F5"  // Светло-серый фон
+                color: "#1E1E1E"  // Темный фон
                 radius: 10  // Скругление углов
+                border.color: "#333333"  // Темная граница
                 Layout.alignment: Qt.AlignHCenter
 
                 ColumnLayout {
@@ -36,6 +37,7 @@ Item {
                     Text {
                         text: "📊"  // Эмодзи или можно заменить на изображение
                         font.pixelSize: 24
+                        color: "#E0E0E0"  // Светло-серый цвет текста
                         Layout.alignment: Qt.AlignHCenter
                     }
 
@@ -43,7 +45,7 @@ Item {
                     Text {
                         text: "Отслеживаемых приложений: " + (trackedAppsModel ? trackedAppsModel.count : 0)
                         font.pixelSize: 16
-                        color: "#333333"  // Темно-серый цвет текста
+                        color: "#E0E0E0"  // Светло-серый цвет текста
                         Layout.alignment: Qt.AlignHCenter
                     }
                 }

@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.15
 Item {
     Rectangle {
         anchors.fill: parent
-        color: "#FFFFFF"  // Белый фон
+        color: "#121212"  // Темный фон (почти черный)
 
         ColumnLayout {
             anchors.fill: parent
@@ -23,7 +23,7 @@ Item {
                     contentItem: Text {
                         text: parent.text
                         font: parent.font
-                        color: "#FFFFFF"  // Белый цвет текста
+                        color: "#FFFFFF"  // Белый цвет текста (остается, так как кнопка цветная)
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -79,7 +79,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#F5F5F5"  // Светло-серый фон
+                color: "#1E1E1E"  // Темный фон для области загрузки
                 radius: 10  // Скругление углов
 
                 Loader {

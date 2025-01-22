@@ -9,7 +9,7 @@ ApplicationWindow {
     minimumWidth: 1280
     minimumHeight: 720
     title: "Activity Monitor"
-    color: "#F5F5F5"  // Светлый фон для всего окна
+    color: "#121212"  // Очень темный фон для всего окна
 
     // Основной макет
     RowLayout {
@@ -20,8 +20,8 @@ ApplicationWindow {
         Rectangle {
             width: 200
             Layout.fillHeight: true
-            color: "#FFFFFF"  // Белый фон для панели навигации
-            border.color: "#E0E0E0"  // Серая граница
+            color: "#1E1E1E"  // Темный фон для панели навигации
+            border.color: "#333333"  // Темная граница
 
             ListView {
                 id: navigation
@@ -48,12 +48,12 @@ ApplicationWindow {
                         contentItem: Text {
                             text: parent.text
                             font: parent.font
-                            color: parent.down ? "#0078D7" : "#333333"  // Цвет текста
+                            color: parent.down ? "#64B5F6" : "#E0E0E0"  // Светло-серый цвет текста
                             horizontalAlignment: Text.AlignLeft
                             leftPadding: 10  // Отступ текста слева
                         }
                         background: Rectangle {
-                            color: parent.hovered ? "#F0F0F0" : "transparent"  // Подсветка при наведении
+                            color: parent.hovered ? "#333333" : "transparent"  // Подсветка при наведении
                             radius: 5  // Скругление углов
                         }
                         onClicked: {
@@ -68,8 +68,8 @@ ApplicationWindow {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#FFFFFF"  // Белый фон для контента
-            border.color: "#E0E0E0"  // Серая граница
+            color: "#1E1E1E"  // Темный фон для контента
+            border.color: "#333333"  // Темная граница
 
             Loader {
                 id: contentLoader
