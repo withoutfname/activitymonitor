@@ -6,9 +6,20 @@ Item {
         anchors.fill: parent
         color: "lightblue"
 
+        // Сообщение, если список пуст
+        Label {
+            id: emptyListMessage
+            anchors.centerIn: parent
+            text: "Нет отслеживаемых приложений"
+            font.pixelSize: 20
+            visible: trackedAppsModel.count === 0 // Показываем, если список пуст
+        }
+
+        // Список отслеживаемых приложений
         ListView {
             anchors.fill: parent
-            model: shortDbAppsModel // Модель установленных приложений, переданная из Python
+            model: trackedAppsModel // Используем trackedAppsModel
+            visible: trackedAppsModel.count > 0 // Показываем, если есть приложения
 
             delegate: Item {
                 width: ListView.view.width
@@ -23,7 +34,7 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: modelData.name
+                        text: name // Отображаем имя приложения
                         font.pixelSize: 18
                     }
                 }

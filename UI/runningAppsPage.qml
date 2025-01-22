@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
+    property var runningAppsToAdd: []
+
     Rectangle {
         anchors.fill: parent
         color: "lightgreen"
@@ -12,39 +14,11 @@ Item {
             spacing: 10
             anchors.margins: 10
 
-            // Кнопка "Старт" или "Стоп"
-            RowLayout {
-                Layout.alignment: Qt.AlignTop | Qt.AlignLeft // Привязываем к верхнему левому углу
-                spacing: 10
-
-                Button {
-                    id: startButton
-                    text: "Начать отслеживание"
-                    visible: appManager ? !appManager.isTracking : false
-                    onClicked: {
-                        if (appManager) {
-                            appManager.startTracking();
-                        }
-                    }
-                }
-
-                Button {
-                    id: stopButton
-                    text: "Остановить отслеживание"
-                    visible: appManager ? appManager.isTracking : false
-                    onClicked: {
-                        if (appManager) {
-                            appManager.stopTracking();
-                        }
-                    }
-                }
-            }
-
             // Поле поиска и кнопка "Обновить"
             RowLayout {
-                visible: appManager ? appManager.isTracking : false
                 Layout.fillWidth: true
                 spacing: 10
+                Layout.bottomMargin: 50
 
                 TextField {
                     id: searchField
@@ -60,20 +34,22 @@ Item {
                 Button {
                     text: "Обновить"
                     onClicked: {
-                        if (appManager) {
-                            appManager.updateOpenedWindows();
-                        }
+                        runningAppsToAdd = [];
+                        openedWindowsManager.updateOpenedWindows(); // Используем openedWindowsManager
                     }
                 }
 
                 Button {
                     text: "Сохранить"
                     onClicked: {
-                        if (appManager && selectedAppsToAdd.length === 0) {
-                            messageDialog.open()
-                        } else if (appManager) {
-                            appManager.saveAppsToDatabase(selectedAppsToAdd)
-                            selectedAppsToAdd = [] // Очистка массива после сохранения
+                        if (runningAppsToAdd.length === 0) {
+                            messageDialog.open();
+                        } else {
+                            databaseManager.saveAppsToDatabase(runningAppsToAdd); // Сохраняем в БД
+                            runningAppsToAdd = []; // Очищаем массив
+                            trackedAppsManager.updateTrackedApps(); // Обновляем список отслеживаемых приложений
+                            openedWindowsManager.updateOpenedWindows(); // Обновляем список открытых окон
+
                         }
                     }
                 }
@@ -84,9 +60,10 @@ Item {
                 id: listView
                 width: 700
                 Layout.fillHeight: true
+                Layout.topMargin: 20
+                Layout.bottomMargin: 20
                 model: openedWindowsModel
                 spacing: 5
-                visible: appManager ? appManager.isTracking : false
 
                 delegate: Rectangle {
                     width: listView.width
@@ -104,6 +81,25 @@ Item {
                         CheckBox {
                             id: checkBox
                             Layout.alignment: Qt.AlignVCenter
+
+                            // Устанавливаем начальное состояние чекбокса
+                            Component.onCompleted: {
+                                checkBox.checked = runningAppsToAdd.some(app => app.processName === model.processName);
+                            }
+
+                            onCheckedChanged: {
+                                if (checked) {
+                                    // Добавляем приложение в массив, если чекбокс отмечен
+                                    runningAppsToAdd.push({
+                                        title: model.title,
+                                        processName: model.processName,
+                                        exePath: model.exePath
+                                    });
+                                } else {
+                                    // Удаляем приложение из массива, если чекбокс снят
+                                    runningAppsToAdd = runningAppsToAdd.filter(app => app.processName !== model.processName);
+                                }
+                            }
                         }
 
                         // Информация о приложении
@@ -140,5 +136,31 @@ Item {
                 }
             }
         }
+    }
+
+    // Диалог для отображения ошибок
+    Dialog {
+        id: messageDialog
+        title: "Ошибка"
+        standardButtons: Dialog.Ok
+        width: 300
+        height: 200
+        contentItem: Text {
+            text: "Выберите хотя бы одно приложение"
+            wrapMode: Text.WordWrap
+            anchors.fill: parent
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        onAccepted: {
+            messageDialog.close();
+        }
+    }
+
+    // Автоматическое обновление списка при загрузке страницы
+    Component.onCompleted: {
+        runningAppsToAdd = [];
+        openedWindowsManager.updateOpenedWindows(); // Используем openedWindowsManager
     }
 }

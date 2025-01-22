@@ -3,8 +3,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
-    property var selectedAppsToAdd: []
-    property var selectedAppsToRemove: []
 
     Rectangle {
         anchors.fill: parent
@@ -55,14 +53,6 @@ Item {
             }
         }
 
-        Component.onCompleted: {
-            selectedAppsToAdd = []
-            selectedAppsToRemove = []
-        }
 
-        Component.onDestruction: {
-            selectedAppsToAdd = []
-            selectedAppsToRemove = []
-        }
     }
 }

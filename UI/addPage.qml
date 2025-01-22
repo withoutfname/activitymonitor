@@ -3,6 +3,11 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
+    // Инициализация массивов для временного хранения отмеченных приложений
+    property var runningAppsToAdd: [] // Для страницы "Запущенные приложения"
+
+    property var customAppsToAdd: [] // Для страницы "Пользовательские приложения"
+
     Rectangle {
         anchors.fill: parent
         color: "lightblue"
@@ -19,23 +24,28 @@ Item {
 
                 Button {
                     text: "Запущенные приложения"
-                    onClicked: loader.source = "runningAppsPage.qml"
-                    Layout.preferredWidth: parent.width // Ширина кнопки равна ширине ColumnLayout
-                    Layout.alignment: Qt.AlignTop // Выравнивание по верхнему краю
+                    onClicked: {
+                        // Очищаем массив перед загрузкой страницы
+                        runningAppsToAdd = []
+                        loader.source = "runningAppsPage.qml"
+                        loader.item.runningAppsToAdd = runningAppsToAdd // Передаем массив
+                    }
+                    Layout.preferredWidth: parent.width
+                    Layout.alignment: Qt.AlignTop
                 }
 
-                Button {
-                    text: "Стандартные приложения"
-                    onClicked: loader.source = "standartAppsPage.qml"
-                    Layout.preferredWidth: parent.width // Ширина кнопки равна ширине ColumnLayout
-                    Layout.alignment: Qt.AlignTop // Выравнивание по верхнему краю
-                }
+
 
                 Button {
                     text: "Пользовательские приложения"
-                    onClicked: loader.source = "customAppsPage.qml"
-                    Layout.preferredWidth: parent.width // Ширина кнопки равна ширине ColumnLayout
-                    Layout.alignment: Qt.AlignTop // Выравнивание по верхнему краю
+                    onClicked: {
+                        // Очищаем массив перед загрузкой страницы
+                        customAppsToAdd = []
+                        loader.source = "customAppsPage.qml"
+
+                    }
+                    Layout.preferredWidth: parent.width
+                    Layout.alignment: Qt.AlignTop
                 }
             }
 
@@ -45,9 +55,13 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 source: "runningAppsPage.qml" // Загружаем первую страницу по умолчанию
+                onLoaded: {
+                    if (source === "runningAppsPage.qml") {
+                        item.runningAppsToAdd = runningAppsToAdd // Передаем массив при загрузке
+
+                    }
+                }
             }
         }
     }
-
-
 }

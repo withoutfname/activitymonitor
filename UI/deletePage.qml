@@ -1,90 +1,34 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.2
 
 Item {
-    Rectangle {
+
+
+
+    ListView {
         anchors.fill: parent
-        color: "lightblue"
+        model: ListModel {
+            ListElement { name: "Example App 1"; exePath: "C:/path/to/exe1" }
+            ListElement { name: "Example App 2"; exePath: "C:/path/to/exe2" }
+            ListElement { name: "Example App 3"; exePath: "C:/path/to/exe3" }
+        }
 
-        ListView {
-            id: listView
-            anchors.fill: parent
-            model: shortDbAppsModel // Модель установленных приложений, переданная из Python
+        delegate: Item {
+            width: parent.width
+            height: 50
 
-            delegate: Item {
-                width: ListView.view.width
+            Rectangle {
+                width: parent.width
                 height: 50
+                color: "lightgray"
+                border.color: "gray"
 
-                RowLayout {
-                    width: parent.width
-                    height: parent.height
-
-                    CheckBox {
-                        id: checkBox
-                        Layout.alignment: Qt.AlignLeft
-                        checked: selectedAppsToRemove.indexOf(modelData.name) !== -1
-                        onCheckedChanged: {
-                            if (checkBox.checked) {
-                                if (selectedAppsToRemove.indexOf(modelData.name) === -1) {
-                                    selectedAppsToRemove.push(modelData.name)
-                                    console.log("Added to Remove:", modelData.name)
-                                }
-                            } else {
-                                var index = selectedAppsToRemove.indexOf(modelData.name)
-                                if (index > -1) {
-                                    selectedAppsToRemove.splice(index, 1)
-                                    console.log("Removed from Remove:", modelData.name)
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        color: "white"
-                        border.color: "black"
-                        radius: 5
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData.name
-                            font.pixelSize: 18
-                        }
-                    }
+                Text {
+                    anchors.centerIn: parent
+                    text: name + " - " + exePath
+                    font.pixelSize: 14
                 }
             }
-        }
-
-        Button {
-            text: "Удалить"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
-            onClicked: {
-                if (selectedAppsToRemove.length === 0) {
-                    messageDialog.open()
-                } else {
-                    appManager.removeAppsFromDatabase(selectedAppsToRemove)
-                    selectedAppsToRemove = []
-                }
-            }
-        }
-    }
-
-    Dialog {
-        id: messageDialog
-        title: "Ошибка"
-        standardButtons: Dialog.Ok
-        contentItem: Text {
-            text: "Выберите хотя бы одно приложение"
-            wrapMode: Text.WordWrap
-        }
-
-        onAccepted: {
-            messageDialog.close()
         }
     }
 }

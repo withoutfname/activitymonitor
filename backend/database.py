@@ -24,22 +24,21 @@ def create_tables():
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS installed_apps (
+                    CREATE TABLE IF NOT EXISTS tracked_apps (
                         id SERIAL PRIMARY KEY,
                         name VARCHAR(255) NOT NULL,
-                        full_exe_path VARCHAR(255),
-                        short_exe_path VARCHAR(255),
+                        exe_path VARCHAR(255),
                         process_name VARCHAR(255)
                     );
                 """)
-                print("Таблица installed_apps создана успешно!")
+                print("Таблица tracked_apps создана успешно!")
 
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS global_stats (
                         id SERIAL PRIMARY KEY,
                         name VARCHAR(255) NOT NULL,
                         process_name VARCHAR(255),
-                        full_exe_path VARCHAR(255),
+                        exe_path VARCHAR(255),
                         start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         end_time TIMESTAMP,
                         is_tracking BOOLEAN DEFAULT TRUE
@@ -72,73 +71,63 @@ def ensure_tables_exist(func):
 
 
 @ensure_tables_exist
-def short_save_installed_apps_db(apps, paths):
+def save_tracked_apps_db(apps):
     """
-    Сохраняет приложения с короткими путями (short_exe_path) в таблицу short_installed_apps.
+    Сохраняет приложения с путями (exe_path) и названиями процессов (process_name) в таблицу tracked_apps.
+    Принимает массив объектов, где каждый объект содержит:
+    - title (название приложения)
+    - processName (название процесса)
+    - exePath (путь к исполняемому файлу)
     """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-                # Вставка данных в таблицу short_installed_apps
-                for app, path in zip(apps, paths):
+                # Вставка данных в таблицу tracked_apps
+                for app in apps:
                     cursor.execute("""
-                        INSERT INTO short_installed_apps (name, short_exe_path) 
-                        VALUES (%s, %s)
-                    """, (app, path))
+                        INSERT INTO tracked_apps (name, exe_path, process_name)
+                        VALUES (%s, %s, %s)
+                    """, (app["title"], app["exePath"], app["processName"]))
 
                 # Сохранение изменений
                 conn.commit()
-                print(f"{len(apps)} приложений успешно добавлены в таблицу short_installed_apps!")
+                print(f"{len(apps)} приложений успешно добавлены в таблицу tracked_apps!")
     except Exception as e:
         print(f"Ошибка при добавлении данных в таблицу: {e}")
 
 
 @ensure_tables_exist
-def full_save_installed_apps_db(apps, paths, processes):
+def get_apps_from_tracked_apps_db():
     """
-    Сохраняет приложения с полными путями (full_exe_path) и названиями процессов (process_name) в таблицу installed_apps.
-    Если full_exe_path известен, short_exe_path будет автоматически извлечен из него.
-    """
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor() as cursor:
-                # Вставка данных в таблицу installed_apps
-                for app, path, process in zip(apps, paths, processes):
-                    # Извлекаем short_exe_path из full_exe_path (если он есть)
-                    short_exe_path = os.path.basename(path) if path else None
-
-                    cursor.execute("""
-                        INSERT INTO installed_apps (name, full_exe_path, short_exe_path, process_name)
-                        VALUES (%s, %s, %s, %s)
-                    """, (app, path, short_exe_path, process))
-
-                # Сохранение изменений
-                conn.commit()
-                print(f"{len(apps)} приложений успешно добавлены в таблицу installed_apps!")
-    except Exception as e:
-        print(f"Ошибка при добавлении данных в таблицу: {e}")
-
-
-@ensure_tables_exist
-def get_names_from_installed_apps_db():
-    """
-    Возвращает список названий приложений из таблицы short_installed_apps.
+    Возвращает список приложений из таблицы tracked_apps.
+    Каждый элемент списка — это словарь с ключами:
+    - name (название приложения)
+    - exePath (путь к исполняемому файлу)
+    - processName (название процесса)
     """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
                 # Выполнение запроса
-                cursor.execute("SELECT name FROM installed_apps")
+                cursor.execute("SELECT name, exe_path, process_name FROM tracked_apps")
 
                 # Получение данных
                 rows = cursor.fetchall()
 
                 # Преобразование данных в список словарей
-                apps = [{'name': row[0]} for row in rows]
+                apps = [
+                    {
+                        "name": row[0],
+                        "exePath": row[1],
+                        "processName": row[2]
+                    }
+                    for row in rows
+                ]
                 return apps
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Ошибка при получении данных из базы данных: {e}")
         return []
+
 
 
 
