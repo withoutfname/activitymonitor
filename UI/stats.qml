@@ -125,16 +125,6 @@ Item {
         updateStats();  // Обновляем данные при загрузке страницы
     }
 
-    // Таймер для обновления текущих активностей
-    Timer {
-        id: incompleteActivitiesTimer
-        interval: 1000  // 1 секунда
-        repeat: true
-        onTriggered: {
-            updateIncompleteActivities();
-        }
-    }
-
     // Функция для обновления статистики и текущих активностей
     function updateStats() {
         // Обновляем статистику
@@ -154,7 +144,7 @@ Item {
 
     // Функция для обновления текущих активностей
     function updateIncompleteActivities() {
-        const incompleteActivities = trackedAppsManager.getIncompleteActivities();
+        const incompleteActivities = appMonitorManager.getIncompleteActivities();  // Используем appMonitorManager
         incompleteActivitiesModel.clear();
         for (const activity of incompleteActivities) {
             incompleteActivitiesModel.append({

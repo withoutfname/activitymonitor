@@ -272,3 +272,25 @@ def get_incomplete_activities():
         print(f"Ошибка при получении незавершенных активностей: {e}")
 
     return incomplete_activities
+
+# backend/database.py
+
+@ensure_tables_exist
+def delete_incomplete_activities():
+    """
+    Удаляет все незавершенные активности (где end_time IS NULL).
+    """
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    DELETE FROM activity_sessions
+                    WHERE end_time IS NULL
+                """)
+
+                # Сохранение изменений
+                conn.commit()
+                print("Незавершенные активности удалены.")
+
+    except Exception as e:
+        print(f"Ошибка при удалении незавершенных активностей: {e}")

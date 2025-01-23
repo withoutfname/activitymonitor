@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 import sys
 
-from managers import DatabaseManager, OpenedWindowsManager, TrackedAppsManager
+from managers import DatabaseManager, OpenedWindowsManager, TrackedAppsManager, AppMonitorManager
 from models.opened_windows_model import OpenedWindowsModel
 from models.tracked_apps_model import TrackedAppsModel
 from models.stats_model import StatsModel  # Импортируем модель статистики
@@ -29,8 +29,10 @@ if __name__ == "__main__":
     # Устанавливаем связь между менеджерами
     opened_windows_manager.setTrackedAppsManager(tracked_apps_manager)
     tracked_apps_manager.databaseManager = database_manager  # Связываем с DatabaseManager
+    app_monitor_manager = AppMonitorManager(tracked_apps_manager)  # Передаем tracked_apps_manager
 
     tracked_apps_manager.updateTrackedApps()
+    app_monitor_manager.checkRunningProcesses()
 
     # Инициализация QML
     engine = QQmlApplicationEngine()
@@ -43,6 +45,7 @@ if __name__ == "__main__":
     context.setContextProperty("trackedAppsModel", tracked_apps_manager.trackedAppsModel)  # Передаем модель
     context.setContextProperty("databaseManager", database_manager)
     context.setContextProperty("statsModel", statsModel)
+    context.setContextProperty("appMonitorManager", app_monitor_manager)
 
     # Загружаем QML
     engine.load("UI/base.qml")
@@ -51,4 +54,15 @@ if __name__ == "__main__":
     if not engine.rootObjects():
         sys.exit(-1)
 
+    def on_app_exit():
+        app_monitor_manager.cleanupOnExit()  # Завершаем все активности
+        print("Приложение закрыто. Все активности завершены.")
+
+
+    app.aboutToQuit.connect(on_app_exit)
+
+
     sys.exit(app.exec())
+
+
+

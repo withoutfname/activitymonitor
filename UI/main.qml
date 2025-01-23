@@ -73,5 +73,17 @@ Item {
                 }
             }
         }
+
+        // Надпись с версией в нижнем правом углу
+        Text {
+            text: "Версия 1.0.0"  // Укажите вашу версию
+            font.pixelSize: 12
+            color: "#808080"  // Серый цвет текста
+            anchors {
+                bottom: parent.bottom
+                right: parent.right
+                margins: 10  // Отступы от краев
+            }
+        }
     }
 }
