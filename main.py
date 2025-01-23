@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 import sys
@@ -48,7 +50,10 @@ if __name__ == "__main__":
     context.setContextProperty("appMonitorManager", app_monitor_manager)
 
     # Загружаем QML
-    engine.load("UI/base.qml")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    qml_file_path = os.path.join(current_dir, 'UI', 'base.qml')
+
+    engine.load(qml_file_path)  # Загружаем QML-файл
 
     # Проверяем, загрузился ли QML
     if not engine.rootObjects():
