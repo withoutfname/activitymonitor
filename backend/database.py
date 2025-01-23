@@ -294,3 +294,100 @@ def delete_incomplete_activities():
 
     except Exception as e:
         print(f"Ошибка при удалении незавершенных активностей: {e}")
+
+
+@ensure_tables_exist
+def get_app_stats_last_2_weeks():
+    """
+    Возвращает статистику по приложениям за последние 2 недели.
+    """
+    stats = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT
+                        name,
+                        exe_path,
+                        SUM(EXTRACT(EPOCH FROM (end_time - start_time))) as total_duration
+                    FROM activity_sessions
+                    WHERE end_time IS NOT NULL
+                      AND start_time >= NOW() - INTERVAL '2 weeks'
+                    GROUP BY name, exe_path
+                """)
+                rows = cursor.fetchall()
+
+                for row in rows:
+                    stats.append({
+                        "name": row[0],
+                        "exePath": row[1],
+                        "totalDuration": int(row[2])
+                    })
+    except Exception as e:
+        print(f"Ошибка при получении статистики за последние 2 недели: {e}")
+
+    return stats
+
+@ensure_tables_exist
+def get_app_stats_last_month():
+    """
+    Возвращает статистику по приложениям за последний месяц.
+    """
+    stats = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT
+                        name,
+                        exe_path,
+                        SUM(EXTRACT(EPOCH FROM (end_time - start_time))) as total_duration
+                    FROM activity_sessions
+                    WHERE end_time IS NOT NULL
+                      AND start_time >= NOW() - INTERVAL '1 month'
+                    GROUP BY name, exe_path
+                """)
+                rows = cursor.fetchall()
+
+                for row in rows:
+                    stats.append({
+                        "name": row[0],
+                        "exePath": row[1],
+                        "totalDuration": int(row[2])
+                    })
+    except Exception as e:
+        print(f"Ошибка при получении статистики за последний месяц: {e}")
+
+    return stats
+
+@ensure_tables_exist
+def get_app_stats_last_year():
+    """
+    Возвращает статистику по приложениям за последний год.
+    """
+    stats = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT
+                        name,
+                        exe_path,
+                        SUM(EXTRACT(EPOCH FROM (end_time - start_time))) as total_duration
+                    FROM activity_sessions
+                    WHERE end_time IS NOT NULL
+                      AND start_time >= NOW() - INTERVAL '1 year'
+                    GROUP BY name, exe_path
+                """)
+                rows = cursor.fetchall()
+
+                for row in rows:
+                    stats.append({
+                        "name": row[0],
+                        "exePath": row[1],
+                        "totalDuration": int(row[2])
+                    })
+    except Exception as e:
+        print(f"Ошибка при получении статистики за последний год: {e}")
+
+    return stats

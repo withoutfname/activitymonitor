@@ -5,7 +5,8 @@ from backend.database import (
     remove_tracked_apps_db,
     start_activity,
     end_activity,
-    cleanup_incomplete_activities, get_app_stats,
+    cleanup_incomplete_activities, get_app_stats, get_app_stats_last_2_weeks, get_app_stats_last_month,
+    get_app_stats_last_year,
 )
 
 
@@ -58,3 +59,15 @@ class DatabaseManager(QObject):
         Возвращает статистику по приложениям из таблицы activity_sessions.
         """
         return get_app_stats()
+
+    @pyqtSlot(result="QVariantList")
+    def getAppStatsLast2Weeks(self):
+        return get_app_stats_last_2_weeks()
+
+    @pyqtSlot(result="QVariantList")
+    def getAppStatsLastMonth(self):
+        return get_app_stats_last_month()
+
+    @pyqtSlot(result="QVariantList")
+    def getAppStatsLastYear(self):
+        return get_app_stats_last_year()
