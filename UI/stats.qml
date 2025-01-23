@@ -7,6 +7,7 @@ Item {
     property int totalDurationLast2Weeks: 0
     property int totalDurationLastMonth: 0
     property int totalDurationLastYear: 0
+    property int totalDurationAllTime: 0  // Новое свойство для статистики за всё время
 
     Rectangle {
         anchors.fill: parent
@@ -466,6 +467,114 @@ Item {
                         NumberAnimation { duration: 200 }
                     }
                 }
+
+                // Статистика за всё время
+                Item {
+                    id: allTimeSection
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: expanded ? 140 : 70
+                    property bool expanded: false
+
+                    // Тень для ячейки
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "transparent"
+                        radius: 10
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            color: "#40000000"
+                            radius: 5
+                            samples: 10
+                            verticalOffset: 2
+                        }
+                    }
+
+                    // Основная ячейка
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: "#1E1E1E"
+                        radius: 10
+                        border.color: "#333333"
+
+                        // Основной контент (заголовок и стрелочка)
+                        RowLayout {
+                            anchors {
+                                top: parent.top
+                                left: parent.left
+                                right: parent.right
+                                margins: 15
+                            }
+                            height: 40
+
+                            Text {
+                                text: "Статистика за всё время: " + formatDuration(totalDurationAllTime)
+                                font.pixelSize: 16
+                                font.bold: true
+                                color: "#E0E0E0"
+                                Layout.fillWidth: true
+                            }
+
+                            Button {
+                                width: 30
+                                height: 30
+                                text: allTimeSection.expanded ? "▲" : "▼"
+                                onClicked: allTimeSection.expanded = !allTimeSection.expanded
+                                background: Rectangle {
+                                    color: "transparent"
+                                    border.color: "#333333"
+                                    radius: 15
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.pixelSize: 14
+                                    color: "#E0E0E0"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                        }
+
+                        // Дополнительная информация (список приложений)
+                        ListView {
+                            visible: allTimeSection.expanded
+                            width: parent.width
+                            height: parent.height - 60
+                            anchors.top: parent.top
+                            anchors.topMargin: 60
+                            anchors.left: parent.left
+                            anchors.leftMargin: 15
+                            anchors.right: parent.right
+                            anchors.rightMargin: 15
+                            model: ListModel { id: statsAllTimeModel }
+                            delegate: Item {
+                                width: ListView.view.width
+                                height: 30
+
+                                Row {
+                                    spacing: 10
+
+                                    Text {
+                                        text: name
+                                        font.pixelSize: 14
+                                        color: "#E0E0E0"
+                                    }
+
+                                    Text {
+                                        text: formatDuration(duration)
+                                        font.pixelSize: 14
+                                        color: "#E0E0E0"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Анимация раскрытия
+                    Behavior on height {
+                        NumberAnimation { duration: 200 }
+                    }
+                }
             }
         }
     }
@@ -486,14 +595,17 @@ Item {
         const statsLast2Weeks = databaseManager.getAppStatsLast2Weeks();
         const statsLastMonth = databaseManager.getAppStatsLastMonth();
         const statsLastYear = databaseManager.getAppStatsLastYear();
+        const statsAllTime = databaseManager.getAppStatsAllTime();  // Получаем статистику за всё время
 
         totalDurationLast2Weeks = statsLast2Weeks.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLastMonth = statsLastMonth.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLastYear = statsLastYear.reduce((acc, stat) => acc + stat.totalDuration, 0);
+        totalDurationAllTime = statsAllTime.reduce((acc, stat) => acc + stat.totalDuration, 0);  // Общая длительность за всё время
 
         updateModel(statsLast2WeeksModel, statsLast2Weeks);
         updateModel(statsLastMonthModel, statsLastMonth);
         updateModel(statsLastYearModel, statsLastYear);
+        updateModel(statsAllTimeModel, statsAllTime);  // Обновляем модель для статистики за всё время
 
         updateIncompleteActivities();
     }
@@ -504,14 +616,19 @@ Item {
         stats.forEach(stat => model.append({ name: stat.name, duration: stat.totalDuration }));
     }
 
-    // Функция для обновления текущих активностей
     function updateIncompleteActivities() {
-        const incompleteActivities = appMonitorManager.getIncompleteActivities();
-        incompleteActivitiesModel.clear();
-        incompleteActivities.forEach(activity => incompleteActivitiesModel.append({
-            name: activity.name,
-            start_time: activity.start_time,
-            current_duration: activity.current_duration
-        }));
+    const incompleteActivities = databaseManager.getIncompleteActivities();
+    incompleteActivitiesModel.clear();
+    incompleteActivities.forEach(activity => incompleteActivitiesModel.append({
+        name: activity.name,  // Здесь уже будет алиас, если он задан
+        start_time: activity.start_time,
+        current_duration: activity.current_duration
+    }));
     }
+
+
+
+
+
+
 }
