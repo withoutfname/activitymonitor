@@ -9,17 +9,22 @@ Item {
     property int totalDurationLastYear: 0
     property int totalDurationAllTime: 0  // Новое свойство для статистики за всё время
 
+
+
     Rectangle {
         anchors.fill: parent
         color: "#121212"  // Темный фон (почти черный)
 
+
         ScrollView {
             anchors.fill: parent
+            anchors.margins: 20
             clip: true
 
+
             ColumnLayout {
-                width: 1000
-                spacing: 10
+                Layout.fillWidth: true  // Занимаем всю доступную ширину
+                spacing: 15
                 anchors.margins: 20  // Внешние отступы
 
                 // Кнопка "Обновить"
@@ -27,7 +32,7 @@ Item {
                     text: "Обновить"
                     font.pixelSize: 16
                     Layout.alignment: Qt.AlignLeft
-                    width: 50
+                    width: 100
                     contentItem: Text {
                         text: parent.text
                         font: parent.font
@@ -38,6 +43,13 @@ Item {
                     background: Rectangle {
                         color: parent.down ? "#005BB5" : "#0078D7"
                         radius: 5
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            color: "#40000000"
+                            radius: 5
+                            samples: 10
+                            verticalOffset: 2
+                        }
                     }
                     onClicked: updateStats()
                 }
@@ -46,7 +58,7 @@ Item {
                 Item {
                     id: currentActivitiesSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: expanded ? 140 : 70
+                    Layout.preferredHeight: expanded ? 200 : 70
                     property bool expanded: false
 
                     // Тень для ячейки
@@ -65,7 +77,7 @@ Item {
 
                     // Основная ячейка
                     Rectangle {
-                        width: parent.width
+                        width: 800
                         height: parent.height
                         color: "#1E1E1E"
                         radius: 10
@@ -110,7 +122,7 @@ Item {
                         }
 
                         // Дополнительная информация (список активностей)
-                        ListView {
+                        Flickable {
                             visible: currentActivitiesSection.expanded
                             width: parent.width
                             height: parent.height - 60
@@ -120,18 +132,26 @@ Item {
                             anchors.leftMargin: 15
                             anchors.right: parent.right
                             anchors.rightMargin: 15
-                            model: ListModel { id: incompleteActivitiesModel }
-                            delegate: Item {
-                                width: ListView.view.width
-                                height: 30
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
 
-                                Row {
-                                    spacing: 10
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: incompleteActivitiesModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
 
-                                    Text {
-                                        text: name + " (начато: " + start_time + ", длительность: " + formatDuration(current_duration) + ")"
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
+                                    Row {
+                                        spacing: 10
+
+                                        Text {
+                                            text: name + " (начато: " + start_time + ", длительность: " + formatDuration(current_duration) + ")"
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
                                     }
                                 }
                             }
@@ -148,7 +168,7 @@ Item {
                 Item {
                     id: last2WeeksSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: expanded ? 140 : 70
+                    Layout.preferredHeight: expanded ? 400 : 70
                     property bool expanded: false
 
                     // Тень для ячейки
@@ -167,7 +187,7 @@ Item {
 
                     // Основная ячейка
                     Rectangle {
-                        width: parent.width
+                        width: 800
                         height: parent.height
                         color: "#1E1E1E"
                         radius: 10
@@ -212,7 +232,7 @@ Item {
                         }
 
                         // Дополнительная информация (список приложений)
-                        ListView {
+                        Flickable {
                             visible: last2WeeksSection.expanded
                             width: parent.width
                             height: parent.height - 60
@@ -222,24 +242,32 @@ Item {
                             anchors.leftMargin: 15
                             anchors.right: parent.right
                             anchors.rightMargin: 15
-                            model: ListModel { id: statsLast2WeeksModel }
-                            delegate: Item {
-                                width: ListView.view.width
-                                height: 30
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
 
-                                Row {
-                                    spacing: 10
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: statsLast2WeeksModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
 
-                                    Text {
-                                        text: name
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
-                                    }
+                                    Row {
+                                        spacing: 10
 
-                                    Text {
-                                        text: formatDuration(duration)
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
+                                        Text {
+                                            text: name
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+
+                                        Text {
+                                            text: formatDuration(duration)
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                        }
                                     }
                                 }
                             }
@@ -256,7 +284,7 @@ Item {
                 Item {
                     id: lastMonthSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: expanded ? 140 : 70
+                    Layout.preferredHeight: expanded ? 400 : 70
                     property bool expanded: false
 
                     // Тень для ячейки
@@ -275,7 +303,7 @@ Item {
 
                     // Основная ячейка
                     Rectangle {
-                        width: parent.width
+                        width: 800
                         height: parent.height
                         color: "#1E1E1E"
                         radius: 10
@@ -320,7 +348,7 @@ Item {
                         }
 
                         // Дополнительная информация (список приложений)
-                        ListView {
+                        Flickable {
                             visible: lastMonthSection.expanded
                             width: parent.width
                             height: parent.height - 60
@@ -330,24 +358,32 @@ Item {
                             anchors.leftMargin: 15
                             anchors.right: parent.right
                             anchors.rightMargin: 15
-                            model: ListModel { id: statsLastMonthModel }
-                            delegate: Item {
-                                width: ListView.view.width
-                                height: 30
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
 
-                                Row {
-                                    spacing: 10
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: statsLastMonthModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
 
-                                    Text {
-                                        text: name
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
-                                    }
+                                    Row {
+                                        spacing: 10
 
-                                    Text {
-                                        text: formatDuration(duration)
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
+                                        Text {
+                                            text: name
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+
+                                        Text {
+                                            text: formatDuration(duration)
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                        }
                                     }
                                 }
                             }
@@ -364,7 +400,7 @@ Item {
                 Item {
                     id: lastYearSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: expanded ? 140 : 70
+                    Layout.preferredHeight: expanded ? 400 : 70
                     property bool expanded: false
 
                     // Тень для ячейки
@@ -383,7 +419,7 @@ Item {
 
                     // Основная ячейка
                     Rectangle {
-                        width: parent.width
+                        width: 800
                         height: parent.height
                         color: "#1E1E1E"
                         radius: 10
@@ -428,7 +464,7 @@ Item {
                         }
 
                         // Дополнительная информация (список приложений)
-                        ListView {
+                        Flickable {
                             visible: lastYearSection.expanded
                             width: parent.width
                             height: parent.height - 60
@@ -438,24 +474,32 @@ Item {
                             anchors.leftMargin: 15
                             anchors.right: parent.right
                             anchors.rightMargin: 15
-                            model: ListModel { id: statsLastYearModel }
-                            delegate: Item {
-                                width: ListView.view.width
-                                height: 30
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
 
-                                Row {
-                                    spacing: 10
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: statsLastYearModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
 
-                                    Text {
-                                        text: name
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
-                                    }
+                                    Row {
+                                        spacing: 10
 
-                                    Text {
-                                        text: formatDuration(duration)
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
+                                        Text {
+                                            text: name
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+
+                                        Text {
+                                            text: formatDuration(duration)
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                        }
                                     }
                                 }
                             }
@@ -472,7 +516,7 @@ Item {
                 Item {
                     id: allTimeSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: expanded ? 140 : 70
+                    Layout.preferredHeight: expanded ? 400 : 70
                     property bool expanded: false
 
                     // Тень для ячейки
@@ -491,7 +535,7 @@ Item {
 
                     // Основная ячейка
                     Rectangle {
-                        width: parent.width
+                        width: 800
                         height: parent.height
                         color: "#1E1E1E"
                         radius: 10
@@ -536,7 +580,7 @@ Item {
                         }
 
                         // Дополнительная информация (список приложений)
-                        ListView {
+                        Flickable {
                             visible: allTimeSection.expanded
                             width: parent.width
                             height: parent.height - 60
@@ -546,24 +590,32 @@ Item {
                             anchors.leftMargin: 15
                             anchors.right: parent.right
                             anchors.rightMargin: 15
-                            model: ListModel { id: statsAllTimeModel }
-                            delegate: Item {
-                                width: ListView.view.width
-                                height: 30
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
 
-                                Row {
-                                    spacing: 10
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: statsAllTimeModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
 
-                                    Text {
-                                        text: name
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
-                                    }
+                                    Row {
+                                        spacing: 10
 
-                                    Text {
-                                        text: formatDuration(duration)
-                                        font.pixelSize: 14
-                                        color: "#E0E0E0"
+                                        Text {
+                                            text: name
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+
+                                        Text {
+                                            text: formatDuration(duration)
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                        }
                                     }
                                 }
                             }
@@ -617,18 +669,12 @@ Item {
     }
 
     function updateIncompleteActivities() {
-    const incompleteActivities = databaseManager.getIncompleteActivities();
-    incompleteActivitiesModel.clear();
-    incompleteActivities.forEach(activity => incompleteActivitiesModel.append({
-        name: activity.name,  // Здесь уже будет алиас, если он задан
-        start_time: activity.start_time,
-        current_duration: activity.current_duration
-    }));
+        const incompleteActivities = databaseManager.getIncompleteActivities();
+        incompleteActivitiesModel.clear();
+        incompleteActivities.forEach(activity => incompleteActivitiesModel.append({
+            name: activity.name,  // Здесь уже будет алиас, если он задан
+            start_time: activity.start_time,
+            current_duration: activity.current_duration
+        }));
     }
-
-
-
-
-
-
 }

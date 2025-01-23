@@ -400,7 +400,7 @@ def get_app_stats_last_month():
                     WHERE s.end_time IS NOT NULL
                       AND s.start_time >= NOW() - INTERVAL '1 month'
                     GROUP BY COALESCE(a.alias, s.name), s.exe_path
-                    
+                    ORDER BY total_duration DESC  -- Сортировка по убыванию
                 """)
                 rows = cursor.fetchall()
 
