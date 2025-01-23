@@ -39,6 +39,8 @@ class TrackedAppsModel(QAbstractListModel):
             return app["exePath"]  # Возвращаем путь к исполняемому файлу
         elif role == Qt.UserRole + 2:
             return app["processName"]  # Возвращаем название процесса
+        elif role == Qt.UserRole + 3:
+            return app.get("alias", app["name"])  # Возвращаем псевдоним, если он есть, иначе имя
         return None
 
     def roleNames(self):
@@ -48,7 +50,8 @@ class TrackedAppsModel(QAbstractListModel):
         roles = {
             Qt.DisplayRole: b"name",  # Роль для отображения имени
             Qt.UserRole + 1: b"exePath",  # Роль для пути к исполняемому файлу
-            Qt.UserRole + 2: b"processName"  # Роль для названия процесса
+            Qt.UserRole + 2: b"processName",  # Роль для названия процесса
+            Qt.UserRole + 3: b"alias"  # Роль для псевдонима
         }
         return roles
 

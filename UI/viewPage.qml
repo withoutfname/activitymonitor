@@ -57,7 +57,7 @@ Item {
                     border.color: "#333333"  // Темно-серая граница
                     radius: 10  // Скругление углов
 
-                    // Основной контент (название приложения и стрелочка)
+                    // Основной контент (псевдоним, кнопка редактирования и стрелочка)
                     RowLayout {
                         anchors {
                             top: parent.top
@@ -67,14 +67,40 @@ Item {
                         }
                         height: 40
 
-                        // Название приложения
+                        // Псевдоним приложения
                         Text {
-                            text: name // Отображаем имя приложения
+                            text: alias
                             font.pixelSize: 16
                             font.bold: true
                             color: "#E0E0E0"  // Светло-серый цвет текста
                             elide: Text.ElideRight
                             Layout.fillWidth: true
+                        }
+
+                        // Кнопка редактирования (карандашик)
+                        Button {
+                            width: 30
+                            height: 30
+                            text: "✏️"  // Иконка карандаша
+                            onClicked: {
+                                // Передаем данные в диалог
+                                editAliasDialog.appName = name
+                                editAliasDialog.appProcessName = processName
+                                editAliasDialog.appExePath = exePath
+                                editAliasDialog.open()
+                            }
+                            background: Rectangle {
+                                color: "transparent"
+                                border.color: "#333333"  // Темно-серая граница
+                                radius: 15
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                font.pixelSize: 14
+                                color: "#E0E0E0"  // Светло-серый цвет текста
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
                         }
 
                         // Стрелочка вниз
@@ -137,6 +163,48 @@ Item {
                     NumberAnimation { duration: 200 } // Плавное изменение высоты за 200 мс
                 }
             }
+        }
+    }
+
+    // Диалог для редактирования псевдонима
+    Dialog {
+        id: editAliasDialog
+        title: "Редактировать псевдоним"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        width: 300
+        height: 200
+
+        // Свойства для хранения данных
+        property string appName: ""
+        property string appProcessName: ""
+        property string appExePath: ""
+
+        contentItem: ColumnLayout {
+            spacing: 10
+
+            TextField {
+                id: aliasInput
+                placeholderText: "Введите новый псевдоним"
+                font.pixelSize: 14
+                color: "#E0E0E0"  // Светло-серый цвет текста
+                placeholderTextColor: "#808080"  // Серый цвет плейсхолдера
+                background: Rectangle {
+                    color: "#1E1E1E"  // Темный фон
+                    radius: 5  // Скругление углов
+                    border.color: "#333333"  // Темно-серая граница
+                }
+            }
+        }
+
+        background: Rectangle {
+            color: "#1E1E1E"  // Темный фон диалога
+            radius: 5  // Скругление углов
+        }
+
+        onAccepted: {
+            // Обновляем псевдоним в базе данных
+            databaseManager.addOrUpdateAlias(appName, appProcessName, appExePath, aliasInput.text)
+            trackedAppsManager.updateTrackedApps()  // Обновляем список приложений
         }
     }
 
