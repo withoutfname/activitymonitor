@@ -51,7 +51,7 @@ Item {
                         radius: 5  // Скругление углов
                     }
                     onClicked: {
-                        contentLoader.source = "addPage.qml"
+                        contentLoader.source = "runningAppsPage.qml"
                     }
                 }
 
@@ -71,6 +71,44 @@ Item {
                     }
                     onClicked: {
                         contentLoader.source = "deletePage.qml"
+                    }
+                }
+
+                Button {
+                    text: "Очистить статитиску"
+                    font.pixelSize: 16
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
+                    onClicked: {
+                        contentLoader.source = "statCleaningPage.qml"
+                    }
+                }
+
+                Button {
+                    text: "Полное удаление"
+                    font.pixelSize: 16
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#FFFFFF"  // Белый цвет текста
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: parent.down ? "#005BB5" : "#0078D7"  // Синий цвет кнопки
+                        radius: 5  // Скругление углов
+                    }
+                    onClicked: {
+                        contentLoader.source = "fullCleaningPage.qml"
                     }
                 }
             }

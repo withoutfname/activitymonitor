@@ -23,6 +23,7 @@ imports:
  &#8226;   <a href="#_collections_abc">_collections_abc</a>
  &#8226;   <a href="#_weakrefset">_weakrefset</a>
  &#8226;   <a href="#abc">abc</a>
+ &#8226;   <a href="#backend.database">backend.database</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#collections">collections</a>
  &#8226;   <a href="#collections.abc">collections.abc</a>
@@ -158,13 +159,12 @@ imports:
  &#8226;   <a href="#linecache">linecache</a>
  &#8226;   <a href="#locale">locale</a>
  &#8226;   <a href="#managers">managers</a>
- &#8226;   <a href="#models.opened_windows_model">models.opened_windows_model</a>
- &#8226;   <a href="#models.stats_model">models.stats_model</a>
- &#8226;   <a href="#models.tracked_apps_model">models.tracked_apps_model</a>
+ &#8226;   <a href="#models">models</a>
  &#8226;   <a href="#ntpath">ntpath</a>
  &#8226;   <a href="#operator">operator</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#posixpath">posixpath</a>
+ &#8226;   <a href="#psycopg2">psycopg2</a>
  &#8226;   <a href="#pyi_rth_inspect.py">pyi_rth_inspect.py</a>
  &#8226;   <a href="#pyi_rth_pkgutil.py">pyi_rth_pkgutil.py</a>
  &#8226;   <a href="#pyi_rth_pyqt5.py">pyi_rth_pyqt5.py</a>
@@ -291,11 +291,12 @@ imported by:
  &#8226;   <a href="#PyQt5.QtQml">PyQt5.QtQml</a>
  &#8226;   <a href="#PyQt5.QtWidgets">PyQt5.QtWidgets</a>
  &#8226;   <a href="#managers.app_monitor_manager">managers.app_monitor_manager</a>
- &#8226;   <a href="#managers.database_manager">managers.database_manager</a>
  &#8226;   <a href="#managers.opened_windows_manager">managers.opened_windows_manager</a>
+ &#8226;   <a href="#managers.stat_cleaning_manager">managers.stat_cleaning_manager</a>
+ &#8226;   <a href="#managers.stats_manager">managers.stats_manager</a>
  &#8226;   <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
  &#8226;   <a href="#models.opened_windows_model">models.opened_windows_model</a>
- &#8226;   <a href="#models.stats_model">models.stats_model</a>
+ &#8226;   <a href="#models.stat_cleaning_model">models.stat_cleaning_model</a>
  &#8226;   <a href="#models.tracked_apps_model">models.tracked_apps_model</a>
 
   </div>
@@ -1397,14 +1398,15 @@ imported by:
 imports:
     <a href="#backend">backend</a>
  &#8226;   <a href="#functools">functools</a>
- &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#psycopg2">psycopg2</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#managers.app_monitor_manager">managers.app_monitor_manager</a>
- &#8226;   <a href="#managers.database_manager">managers.database_manager</a>
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#managers.app_monitor_manager">managers.app_monitor_manager</a>
+ &#8226;   <a href="#managers.stat_cleaning_manager">managers.stat_cleaning_manager</a>
+ &#8226;   <a href="#managers.stats_manager">managers.stats_manager</a>
  &#8226;   <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
 
   </div>
@@ -5340,6 +5342,7 @@ imports:
  &#8226;   <a href="#importlib">importlib</a>
  &#8226;   <a href="#importlib._bootstrap">importlib._bootstrap</a>
  &#8226;   <a href="#importlib._bootstrap_external">importlib._bootstrap_external</a>
+ &#8226;   <a href="#importlib.machinery">importlib.machinery</a>
  &#8226;   <a href="#sys">sys</a>
  &#8226;   <a href="#warnings">warnings</a>
 
@@ -5472,7 +5475,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#importlib.abc">importlib.abc</a>
+    <a href="#importlib">importlib</a>
+ &#8226;   <a href="#importlib.abc">importlib.abc</a>
  &#8226;   <a href="#inspect">inspect</a>
  &#8226;   <a href="#pkgutil">pkgutil</a>
  &#8226;   <a href="#py_compile">py_compile</a>
@@ -6198,8 +6202,9 @@ imported by:
 <span class="moduletype">Package</span>  <div class="import">
 imports:
     <a href="#managers.app_monitor_manager">managers.app_monitor_manager</a>
- &#8226;   <a href="#managers.database_manager">managers.database_manager</a>
  &#8226;   <a href="#managers.opened_windows_manager">managers.opened_windows_manager</a>
+ &#8226;   <a href="#managers.stat_cleaning_manager">managers.stat_cleaning_manager</a>
+ &#8226;   <a href="#managers.stats_manager">managers.stats_manager</a>
  &#8226;   <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
 
   </div>
@@ -6207,8 +6212,9 @@ imports:
 imported by:
     <a href="#main.py">main.py</a>
  &#8226;   <a href="#managers.app_monitor_manager">managers.app_monitor_manager</a>
- &#8226;   <a href="#managers.database_manager">managers.database_manager</a>
  &#8226;   <a href="#managers.opened_windows_manager">managers.opened_windows_manager</a>
+ &#8226;   <a href="#managers.stat_cleaning_manager">managers.stat_cleaning_manager</a>
+ &#8226;   <a href="#managers.stats_manager">managers.stats_manager</a>
  &#8226;   <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
 
   </div>
@@ -6235,12 +6241,12 @@ imported by:
 </div>
 
 <div class="node">
-  <a name="managers.database_manager"></a>
-  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/managers/database_manager.py" type="text/plain"><tt>managers.database_manager</tt></a>
+  <a name="managers.opened_windows_manager"></a>
+  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/managers/opened_windows_manager.py" type="text/plain"><tt>managers.opened_windows_manager</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
- &#8226;   <a href="#backend.database">backend.database</a>
+ &#8226;   <a href="#backend.opened_windows">backend.opened_windows</a>
  &#8226;   <a href="#managers">managers</a>
 
   </div>
@@ -6253,12 +6259,31 @@ imported by:
 </div>
 
 <div class="node">
-  <a name="managers.opened_windows_manager"></a>
-  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/managers/opened_windows_manager.py" type="text/plain"><tt>managers.opened_windows_manager</tt></a>
+  <a name="managers.stat_cleaning_manager"></a>
+  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/managers/stat_cleaning_manager.py" type="text/plain"><tt>managers.stat_cleaning_manager</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
- &#8226;   <a href="#backend.opened_windows">backend.opened_windows</a>
+ &#8226;   <a href="#backend.database">backend.database</a>
+ &#8226;   <a href="#managers">managers</a>
+ &#8226;   <a href="#models">models</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#managers">managers</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="managers.stats_manager"></a>
+  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/managers/stats_manager.py" type="text/plain"><tt>managers.stats_manager</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
+ &#8226;   <a href="#backend.database">backend.database</a>
  &#8226;   <a href="#managers">managers</a>
 
   </div>
@@ -6323,12 +6348,16 @@ imported by:
 <span class="moduletype">Package</span>  <div class="import">
 imports:
     <a href="#models.opened_windows_model">models.opened_windows_model</a>
+ &#8226;   <a href="#models.stat_cleaning_model">models.stat_cleaning_model</a>
+ &#8226;   <a href="#models.tracked_apps_model">models.tracked_apps_model</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#models.opened_windows_model">models.opened_windows_model</a>
- &#8226;   <a href="#models.stats_model">models.stats_model</a>
+    <a href="#main.py">main.py</a>
+ &#8226;   <a href="#managers.stat_cleaning_manager">managers.stat_cleaning_manager</a>
+ &#8226;   <a href="#models.opened_windows_model">models.opened_windows_model</a>
+ &#8226;   <a href="#models.stat_cleaning_model">models.stat_cleaning_model</a>
  &#8226;   <a href="#models.tracked_apps_model">models.tracked_apps_model</a>
 
   </div>
@@ -6346,16 +6375,15 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#main.py">main.py</a>
- &#8226;   <a href="#models">models</a>
+    <a href="#models">models</a>
 
   </div>
 
 </div>
 
 <div class="node">
-  <a name="models.stats_model"></a>
-  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/models/stats_model.py" type="text/plain"><tt>models.stats_model</tt></a>
+  <a name="models.stat_cleaning_model"></a>
+  <a target="code" href="///C:/Users/emilm/PycharmProjects/ActivityMonitor/models/stat_cleaning_model.py" type="text/plain"><tt>models.stat_cleaning_model</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#PyQt5.QtCore">PyQt5.QtCore</a>
@@ -6364,7 +6392,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#main.py">main.py</a>
+    <a href="#models">models</a>
 
   </div>
 
@@ -6381,8 +6409,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#main.py">main.py</a>
- &#8226;   <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
+    <a href="#managers.tracked_apps_manager">managers.tracked_apps_manager</a>
+ &#8226;   <a href="#models">models</a>
 
   </div>
 
@@ -6527,7 +6555,6 @@ imported by:
  &#8226;   <a href="#_pyi_rth_utils">_pyi_rth_utils</a>
  &#8226;   <a href="#_pyi_rth_utils.qt">_pyi_rth_utils.qt</a>
  &#8226;   <a href="#argparse">argparse</a>
- &#8226;   <a href="#backend.database">backend.database</a>
  &#8226;   <a href="#bz2">bz2</a>
  &#8226;   <a href="#contextlib">contextlib</a>
  &#8226;   <a href="#ctypes">ctypes</a>
@@ -6946,6 +6973,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#backend.database">backend.database</a>
+ &#8226;   <a href="#main.py">main.py</a>
  &#8226;   <a href="#psycopg2">psycopg2</a>
  &#8226;   <a href="#psycopg2._ipaddress">psycopg2._ipaddress</a>
  &#8226;   <a href="#psycopg2._json">psycopg2._json</a>

@@ -644,10 +644,10 @@ Item {
 
     // Функция для обновления статистики и текущих активностей
     function updateStats() {
-        const statsLast2Weeks = databaseManager.getAppStatsLast2Weeks();
-        const statsLastMonth = databaseManager.getAppStatsLastMonth();
-        const statsLastYear = databaseManager.getAppStatsLastYear();
-        const statsAllTime = databaseManager.getAppStatsAllTime();  // Получаем статистику за всё время
+        const statsLast2Weeks = statsManager.getAppStatsLast2Weeks();
+        const statsLastMonth = statsManager.getAppStatsLastMonth();
+        const statsLastYear = statsManager.getAppStatsLastYear();
+        const statsAllTime = statsManager.getAppStatsAllTime();  // Получаем статистику за всё время
 
         totalDurationLast2Weeks = statsLast2Weeks.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLastMonth = statsLastMonth.reduce((acc, stat) => acc + stat.totalDuration, 0);
@@ -669,7 +669,7 @@ Item {
     }
 
     function updateIncompleteActivities() {
-        const incompleteActivities = databaseManager.getIncompleteActivities();
+        const incompleteActivities = statsManager.getIncompleteActivities();
         incompleteActivitiesModel.clear();
         incompleteActivities.forEach(activity => incompleteActivitiesModel.append({
             name: activity.name,  // Здесь уже будет алиас, если он задан

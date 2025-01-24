@@ -203,7 +203,7 @@ Item {
 
         onAccepted: {
             // Обновляем псевдоним в базе данных
-            databaseManager.addOrUpdateAlias(appName, appProcessName, appExePath, aliasInput.text)
+            trackedAppsManager.addOrUpdateAlias(appName, appProcessName, appExePath, aliasInput.text)
             trackedAppsManager.updateTrackedApps()  // Обновляем список приложений
         }
     }

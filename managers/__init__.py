@@ -1,12 +1,15 @@
 # managers/__init__.py
-from .database_manager import DatabaseManager
-from .opened_windows_manager import OpenedWindowsManager
-from .tracked_apps_manager import TrackedAppsManager
-from .app_monitor_manager import AppMonitorManager
+from .opened_windows_manager import openedWindowsManager
+from .tracked_apps_manager import trackedAppsManager
+from .app_monitor_manager import appMonitorManager
+from .stats_manager import statsManager
+from .stat_cleaning_manager import statCleaningManager
+
 
 __all__ = [
-    "DatabaseManager",
-    "OpenedWindowsManager",
-    "TrackedAppsManager",
-    "AppMonitorManager",
+    "openedWindowsManager",
+    "trackedAppsManager",
+    "appMonitorManager",
+    "statsManager",
+    "statCleaningManager",
 ]

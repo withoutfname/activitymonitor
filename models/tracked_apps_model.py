@@ -2,7 +2,7 @@
 from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex, pyqtProperty, pyqtSignal
 
 
-class TrackedAppsModel(QAbstractListModel):
+class trackedAppsModel(QAbstractListModel):
     # Сигнал для уведомления об изменении данных
     trackedAppsChanged = pyqtSignal()
 

@@ -1,38 +1,46 @@
 import os
 
+import psycopg2
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 import sys
 
-from managers import DatabaseManager, OpenedWindowsManager, TrackedAppsManager, AppMonitorManager
-from models.opened_windows_model import OpenedWindowsModel
-from models.tracked_apps_model import TrackedAppsModel
-from models.stats_model import StatsModel  # Импортируем модель статистики
-
+from backend.database import get_db_connection
+from managers import openedWindowsManager, trackedAppsManager, appMonitorManager, statsManager, \
+    statCleaningManager
+from models import openedWindowsModel, trackedAppsModel, statCleaningModel
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    statsModel = StatsModel()
+    try:
+        connection = get_db_connection()
+        print("Успешное подключение к базе данных!")
+        connection.close()
+    except psycopg2.Error as e:
+        print(f"Ошибка подключения к базе данных: {e}")
 
+    # Модели
+    opened_windows_model = openedWindowsModel()
+    tracked_apps_model = trackedAppsModel()
+    stat_cleaning_model = statCleaningModel()
 
-    # Модель для открытых окон
-    opened_windows_model = OpenedWindowsModel()
-
-    tracked_apps_model = TrackedAppsModel()
     # Менеджеры
-    opened_windows_manager = OpenedWindowsManager()
-    tracked_apps_manager = TrackedAppsManager()
-    database_manager = DatabaseManager()
+    opened_windows_manager = openedWindowsManager()
+    tracked_apps_manager = trackedAppsManager()
+    stat_cleaning_manager = statCleaningManager()
+    stats_manager = statsManager()
 
     # Связываем модель с менеджером
     opened_windows_manager.openedWindowsModel = opened_windows_model
+    stat_cleaning_manager._model = stat_cleaning_model
+
 
     # Устанавливаем связь между менеджерами
     opened_windows_manager.setTrackedAppsManager(tracked_apps_manager)
-    tracked_apps_manager.databaseManager = database_manager  # Связываем с DatabaseManager
-    app_monitor_manager = AppMonitorManager(tracked_apps_manager)  # Передаем tracked_apps_manager
+    app_monitor_manager = appMonitorManager(tracked_apps_manager)
 
+    # Вызываем функции менеджеров
     tracked_apps_manager.updateTrackedApps()
     app_monitor_manager.checkRunningProcesses()
 
@@ -40,14 +48,17 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()
     context = engine.rootContext()
 
-    # Передаем модели и менеджеры в QML
-    context.setContextProperty("openedWindowsModel", opened_windows_model)
+    # Передаем менеджеры в QML
     context.setContextProperty("openedWindowsManager", opened_windows_manager)
     context.setContextProperty("trackedAppsManager", tracked_apps_manager)
-    context.setContextProperty("trackedAppsModel", tracked_apps_manager.trackedAppsModel)  # Передаем модель
-    context.setContextProperty("databaseManager", database_manager)
-    context.setContextProperty("statsModel", statsModel)
     context.setContextProperty("appMonitorManager", app_monitor_manager)
+    context.setContextProperty("statCleaningManager", stat_cleaning_manager)
+    context.setContextProperty("statsManager", stats_manager)
+
+    # Передаем модели в QML
+    context.setContextProperty("openedWindowsModel", opened_windows_model)
+    context.setContextProperty("trackedAppsModel", tracked_apps_manager.trackedAppsModel)
+    engine.rootContext().setContextProperty("statCleaningModel", stat_cleaning_model)
 
     # Загружаем QML
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -60,12 +71,9 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     def on_app_exit():
-        app_monitor_manager.cleanupOnExit()  # Завершаем все активности
-        print("Приложение закрыто. Все активности завершены.")
-
+        app_monitor_manager.cleanupOnExit()
 
     app.aboutToQuit.connect(on_app_exit)
-
 
     sys.exit(app.exec())
 

@@ -3,7 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
-    property var runningAppsToAdd: []
+    // Инициализация массивов для временного хранения отмеченных приложений
+    property var runningAppsToAdd: [] // Для страницы "Запущенные приложения"
 
     Rectangle {
         anchors.fill: parent
@@ -79,7 +80,7 @@ Item {
                         if (runningAppsToAdd.length === 0) {
                             messageDialog.open();
                         } else {
-                            databaseManager.saveAppsToDatabase(runningAppsToAdd); // Сохраняем в БД
+                            trackedAppsManager.saveAppsToDatabase(runningAppsToAdd); // Сохраняем в БД
                             runningAppsToAdd = []; // Очищаем массив
                             trackedAppsManager.updateTrackedApps(); // Обновляем список отслеживаемых приложений
                             openedWindowsManager.updateOpenedWindows(); // Обновляем список открытых окон

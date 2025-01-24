@@ -2,7 +2,7 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtProperty
 from backend.opened_windows import get_opened_windows
 
 
-class OpenedWindowsManager(QObject):
+class openedWindowsManager(QObject):
     def __init__(self):
         super().__init__()
         self._runningAppsToAdd = []  # Массив для хранения отмеченных приложений

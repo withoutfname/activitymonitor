@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex, QVariant, pyqtSlot
 
 
-class OpenedWindowsModel(QAbstractListModel):
+class openedWindowsModel(QAbstractListModel):
     def __init__(self, windows=None):
         super().__init__()
         self.windows = windows or []

@@ -1,11 +1,10 @@
 # managers/app_monitor_manager.py
-
 from PyQt5.QtCore import QObject, QTimer, QDateTime, Qt, pyqtSlot
 from backend.database import start_activity, end_activity, delete_incomplete_activities
-import psutil  # Используем psutil для работы с процессами
+import psutil
 
 
-class AppMonitorManager(QObject):
+class appMonitorManager(QObject):
     def __init__(self, trackedAppsManager):
         super().__init__()
         self.trackedAppsManager = trackedAppsManager  # Ссылка на менеджер отслеживаемых приложений
@@ -26,7 +25,6 @@ class AppMonitorManager(QObject):
         """
         try:
             delete_incomplete_activities()
-            print("Незавершенные активности удалены при запуске приложения.")
         except Exception as e:
             print(f"Ошибка при удалении незавершенных активностей: {e}")
 

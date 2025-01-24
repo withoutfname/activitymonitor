@@ -8,8 +8,18 @@ Item {
         anchors.fill: parent
         color: "#121212"  // Темный фон (почти черный)
 
+        Label {
+            id: emptyListMessage
+            anchors.centerIn: parent
+            text: "Нет отслеживаемых приложений"
+            font.pixelSize: 20
+            color: "#E0E0E0"  // Светло-серый цвет текста
+            visible: trackedAppsModel ? trackedAppsModel.count === 0 : true // Проверка на null
+        }
+
         // Кнопка "Удалить"
         Button {
+            visible: trackedAppsModel ? trackedAppsModel.count !== 0 : true // Проверка на null
             id: deleteButton
             anchors {
                 top: parent.top
@@ -36,7 +46,7 @@ Item {
                     messageDialog.open();
                 } else {
                     // Удаляем выбранные приложения из базы данных
-                    databaseManager.removeAppsFromDatabase(selectedAppsToRemove);
+                    trackedAppsManager.removeAppsFromDatabase(selectedAppsToRemove);
                     selectedAppsToRemove = []; // Очищаем массив
                     trackedAppsManager.updateTrackedApps(); // Обновляем список приложений
                 }
@@ -94,7 +104,6 @@ Item {
                                     // Удаляем приложение из массива, если чекбокс снят
                                     selectedAppsToRemove = selectedAppsToRemove.filter(app => app.processName !== model.processName);
                                 }
-
                             }
                         }
 
