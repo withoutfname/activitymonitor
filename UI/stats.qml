@@ -59,7 +59,7 @@ Item {
                     id: currentActivitiesSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: expanded ? 200 : 70
-                    property bool expanded: false
+                    property bool expanded: true
 
                     // Тень для ячейки
                     Rectangle {
