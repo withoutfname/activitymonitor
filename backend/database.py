@@ -453,7 +453,44 @@ def get_app_stats_last_year():
     return get_app_stats_by_interval('1 year')
 
 
+@ensure_tables_exist
+def get_app_stats_today():
+    """
+    Возвращает статистику по приложениям за текущий день.
+    :return: Список словарей с информацией о приложениях.
+    """
+    stats = []
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                # Получаем статистику по алиасам
+                cursor.execute("""
+                    SELECT
+                        COALESCE(a.alias, a.name) as name,
+                        a.exe_path,
+                        SUM(EXTRACT(EPOCH FROM (s.end_time - s.start_time))) as total_duration
+                    FROM activity_sessions s
+                    JOIN apps a ON s.app_id = a.id
+                    WHERE s.end_time IS NOT NULL
+                      AND s.start_time >= CURRENT_DATE  -- Фильтр по текущему дню
+                      AND s.start_time < CURRENT_DATE + INTERVAL '1 day'  -- Верхняя граница дня
+                    GROUP BY a.alias, a.name, a.exe_path
+                    ORDER BY total_duration DESC
+                """)
+                rows = cursor.fetchall()
 
+                # Заполняем статистику по алиасам
+                for row in rows:
+                    stats.append({
+                        "name": row[0],
+                        "exePath": row[1],
+                        "totalDuration": int(row[2])
+                    })
+
+    except Exception as e:
+        print(f"Ошибка при получении статистики за текущий день: {e}")
+
+    return stats
 
 
 @ensure_tables_exist

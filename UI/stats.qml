@@ -7,7 +7,8 @@ Item {
     property int totalDurationLast2Weeks: 0
     property int totalDurationLastMonth: 0
     property int totalDurationLastYear: 0
-    property int totalDurationAllTime: 0  // Новое свойство для статистики за всё время
+    property int totalDurationAllTime: 0
+    property int totalDurationToday: 0// Новое свойство для статистики за всё время
 
 
 
@@ -151,6 +152,123 @@ Item {
                                             font.pixelSize: 14
                                             color: "#E0E0E0"
                                             elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Анимация раскрытия
+                    Behavior on height {
+                        NumberAnimation { duration: 200 }
+                    }
+                }
+
+
+                // Статистика за текущий день
+                Item {
+                    id: todaySection
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: expanded ? 200 : 70
+                    property bool expanded: true
+
+                    // Тень для ячейки
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "transparent"
+                        radius: 10
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            color: "#40000000"
+                            radius: 5
+                            samples: 10
+                            verticalOffset: 2
+                        }
+                    }
+
+                    // Основная ячейка
+                    Rectangle {
+                        width: 800
+                        height: parent.height
+                        color: "#1E1E1E"
+                        radius: 10
+                        border.color: "#333333"
+
+                        // Основной контент (заголовок и стрелочка)
+                        RowLayout {
+                            anchors {
+                                top: parent.top
+                                left: parent.left
+                                right: parent.right
+                                margins: 15
+                            }
+                            height: 40
+
+                            Text {
+                                text: "Статистика за текущий день: " + formatDuration(totalDurationToday)
+                                font.pixelSize: 16
+                                font.bold: true
+                                color: "#E0E0E0"
+                                Layout.fillWidth: true
+                            }
+
+                            Button {
+                                width: 30
+                                height: 30
+                                text: todaySection.expanded ? "▲" : "▼"
+                                onClicked: todaySection.expanded = !todaySection.expanded
+                                background: Rectangle {
+                                    color: "transparent"
+                                    border.color: "#333333"
+                                    radius: 15
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.pixelSize: 14
+                                    color: "#E0E0E0"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                        }
+
+                        // Дополнительная информация (список приложений)
+                        Flickable {
+                            visible: todaySection.expanded
+                            width: parent.width
+                            height: parent.height - 60
+                            anchors.top: parent.top
+                            anchors.topMargin: 60
+                            anchors.left: parent.left
+                            anchors.leftMargin: 15
+                            anchors.right: parent.right
+                            anchors.rightMargin: 15
+                            clip: true
+                            flickableDirection: Flickable.VerticalFlick  // Оставляем только вертикальный скролл
+
+                            ListView {
+                                width: parent.width
+                                height: parent.height
+                                model: ListModel { id: statsTodayModel }
+                                delegate: Item {
+                                    width: ListView.view.width
+                                    height: 30
+
+                                    Row {
+                                        spacing: 10
+
+                                        Text {
+                                            text: name
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
+                                            elide: Text.ElideRight  // Обрезаем текст, если он не помещается
+                                        }
+
+                                        Text {
+                                            text: formatDuration(duration)
+                                            font.pixelSize: 14
+                                            color: "#E0E0E0"
                                         }
                                     }
                                 }
@@ -644,16 +762,19 @@ Item {
 
     // Функция для обновления статистики и текущих активностей
     function updateStats() {
+        const statsToday = statsManager.getAppStatsToday();
         const statsLast2Weeks = statsManager.getAppStatsLast2Weeks();
         const statsLastMonth = statsManager.getAppStatsLastMonth();
         const statsLastYear = statsManager.getAppStatsLastYear();
         const statsAllTime = statsManager.getAppStatsAllTime();  // Получаем статистику за всё время
 
+        totalDurationToday = statsToday.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLast2Weeks = statsLast2Weeks.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLastMonth = statsLastMonth.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationLastYear = statsLastYear.reduce((acc, stat) => acc + stat.totalDuration, 0);
         totalDurationAllTime = statsAllTime.reduce((acc, stat) => acc + stat.totalDuration, 0);  // Общая длительность за всё время
 
+        updateModel(statsTodayModel, statsToday);
         updateModel(statsLast2WeeksModel, statsLast2Weeks);
         updateModel(statsLastMonthModel, statsLastMonth);
         updateModel(statsLastYearModel, statsLastYear);

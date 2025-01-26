@@ -4,7 +4,7 @@ from backend.database import (
     get_app_stats_last_month,
     get_app_stats_last_year,
     get_app_stats_all_time,
-    get_incomplete_activities,
+    get_incomplete_activities, get_app_stats_today,
 )
 
 class statsManager(QObject):
@@ -40,6 +40,14 @@ class statsManager(QObject):
         Возвращает статистику по приложениям за всё время.
         """
         return get_app_stats_all_time()
+
+    @pyqtSlot(result="QVariantList")
+    def getAppStatsToday(self):
+        """
+        Возвращает статистику по приложениям за всё время.
+        """
+        return get_app_stats_today()
+
 
     @pyqtSlot(result="QVariantList")
     def getIncompleteActivities(self):
